@@ -25,20 +25,19 @@ function Read-Menu {
 
         [string]$ExitOption,
 
-        [switch]$SkipOptionsSorting,
-
         [switch]$CleanUpAfter,
 
         [string]$MenuTextColor = 'Yellow'
     )
 
-    if (-not $SkipOptionsSorting) {
-        $Options = $Options | Sort-Object
-    }
+    $CombinedOptions = @()
 
-    if ($FirstOptions) { $Options = $FirstOptions + $Options }
-    if ($LastOptions) { $Options += $LastOptions }
-    if ($ExitOption) { $Options += $ExitOption }
+    if ($FirstOptions) { $CombinedOptions += $FirstOptions }
+    if ($Options) { $CombinedOptions += $Options }
+    if ($LastOptions) { $CombinedOptions += $LastOptions }
+    if ($ExitOption) { $CombinedOptions += $ExitOption }
+
+    $OptionsCount = $CombinedOptions.Count
 
     [System.Console]::CursorVisible = $False
 
@@ -46,9 +45,9 @@ function Read-Menu {
     $StartingRow = [System.Console]::CursorTop
 
     while ($true) {
-        for ($i = 0; $i -lt $Options.Count; $i++) {
+        for ($i = 0; $i -lt $OptionsCount; $i++) {
             $color = if ($i -eq $CurrentIndex) { $MenuTextColor } else { 'Gray' }
-            Write-Host ">  $($Options[$i])" -ForegroundColor $color
+            Write-Host ">  $($CombinedOptions[$i])" -ForegroundColor $color
         }
 
         if ([Console]::KeyAvailable) {
@@ -60,17 +59,17 @@ function Read-Menu {
                     Break
                 }
                 { $_ -in "DownArrow", "J" } {
-                    $CurrentIndex = [Math]::Min($Options.Count - 1, $CurrentIndex + 1)
+                    $CurrentIndex = [Math]::Min($OptionsCount - 1, $CurrentIndex + 1)
                     Break
                 }
                 { $_ -in "Enter", "L" } {
-                    Exit-Menu -CleanUpAfter $CleanUpAfter -MenuHeight $Options.Length -StartingRow $StartingRow
+                    Exit-Menu -CleanUpAfter $CleanUpAfter -MenuHeight $OptionsCount -StartingRow $StartingRow
 
                     [System.Console]::CursorVisible = $true
-                    Return $Options[$CurrentIndex]
+                    Return $CombinedOptions[$CurrentIndex]
                 }
                 { $_ -in "Escape", "Q" -and $ExitOption } {
-                    Exit-Menu -CleanUpAfter $CleanUpAfter -MenuHeight $Options.Length -StartingRow $StartingRow
+                    Exit-Menu -CleanUpAfter $CleanUpAfter -MenuHeight $OptionsCount -StartingRow $StartingRow
 
                     [System.Console]::CursorVisible = $true
                     Return 'Exit'
@@ -78,7 +77,7 @@ function Read-Menu {
             }
         }
 
-        $StartingRow = [System.Console]::CursorTop - $Options.Length
+        $StartingRow = [System.Console]::CursorTop - $OptionsCount
         [System.Console]::SetCursorPosition(0, $StartingRow)
     }
 }
