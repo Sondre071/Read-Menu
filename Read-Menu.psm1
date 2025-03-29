@@ -17,7 +17,6 @@ function Exit-Menu($CleanUpAfter, $MenuHeight, $StartingRow) {
 
 function Read-Menu {
     param (
-        [Parameter(Mandatory = $true)]
         [string[]]$Options,
 
         [string[]]$FirstOptions,
