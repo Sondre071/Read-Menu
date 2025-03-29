@@ -27,15 +27,14 @@ function Read-Menu {
 
         [string]$ExitOption,
 
-        # Will need to rework this parameter at some point, it's weird.
-        [switch]$SkipSorting,
+        [switch]$SkipOptionsSorting,
 
         [switch]$CleanUpAfter,
 
         [string]$MenuTextColor = 'Yellow'
     )
 
-    if (-not $SkipSorting) {
+    if (-not $SkipOptionsSorting) {
         $Options = $Options | Sort-Object
     }
 
