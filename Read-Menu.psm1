@@ -1,3 +1,21 @@
+function Exit-Menu($CleanUpAfter, $MenuHeight, $StartingRow) {
+    if ($CleanUpAfter) {
+        [System.Console]::SetCursorPosition(0, $StartingRow)
+
+        $TerminalWidth = [System.Console]::WindowWidth
+
+        for ($i = 0; $i -lt $MenuHeight + 1; $i++) {
+            Start-Sleep -Seconds 1
+            Write-Host (' ' * $TerminalWidth)
+        }
+
+        [System.Console]::SetCursorPosition(0, $StartingRow)
+    }
+    else {
+        Write-Host
+    }
+}
+
 function Read-Menu {
     param (
         [Parameter(Mandatory = $true)]
@@ -9,7 +27,10 @@ function Read-Menu {
 
         [string]$ExitOption,
 
+        # Will need to rework this parameter at some point, it's weird.
         [switch]$SkipSorting,
+
+        [switch]$CleanUpAfter,
 
         [string]$MenuTextColor = 'Yellow'
     )
@@ -46,10 +67,14 @@ function Read-Menu {
                     Break
                 }
                 { $_ -in "Enter", "L" } {
+                    Exit-Menu -CleanUpAfter $CleanUpAfter -MenuHeight $Options.Length -StartingRow $StartingRow
+
                     [System.Console]::CursorVisible = $true
                     Return $Options[$CurrentIndex]
                 }
                 { $_ -in "Escape", "Q" -and $ExitOption } {
+                    Exit-Menu -CleanUpAfter $CleanUpAfter -MenuHeight $Options.Length -StartingRow $StartingRow
+
                     [System.Console]::CursorVisible = $true
                     Return 'Exit'
                 }
