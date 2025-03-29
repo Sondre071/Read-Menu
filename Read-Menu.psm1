@@ -1,14 +1,30 @@
-function Exit-Menu($CleanUpAfter, $MenuHeight, $StartingRow) {
+function Write-MenuTitle($Title, $TitleWidth) {
+    $titleWithSpaces = " $Title "
+
+    $paddingLength = [Math]::Max(0, ($TitleWidth - $titleWithSpaces.Length) / 2)
+    $padding = '=' * [Math]::Floor($paddingLength)
+    $line = "$padding$titleWithSpaces$padding"
+
+    if ($line.Length -lt $TitleWidth) {
+        $line += '='
+    }
+
+    Write-Host $line -ForegroundColor Yellow
+}
+
+function Exit-Menu($CleanUpAfter, $RowsToClear, $ClearFromRow) {
     if ($CleanUpAfter) {
-        [System.Console]::SetCursorPosition(0, $StartingRow)
+        $FirstRow = if ($MenuTitle ) { $StartingRow - 1 } else { $StartingRow }
+
+        [System.Console]::SetCursorPosition(0, $FirstRow)
 
         $TerminalWidth = [System.Console]::WindowWidth
 
-        for ($i = 0; $i -lt $MenuHeight + 1; $i++) {
+        for ($i = 0; $i -lt $RowsToClear + 1; $i++) {
             Write-Host (' ' * $TerminalWidth)
         }
 
-        [System.Console]::SetCursorPosition(0, $StartingRow)
+        [System.Console]::SetCursorPosition(0, $FirstRow)
     }
     else {
         Write-Host
@@ -25,9 +41,13 @@ function Read-Menu {
 
         [string]$ExitOption,
 
-        [switch]$CleanUpAfter,
+        [string]$MenuTitle,
 
-        [string]$MenuTextColor = 'Yellow'
+        [int]$TitleWidth = 30,
+
+        [string]$MenuTextColor = 'Yellow',
+
+        [switch]$CleanUpAfter
     )
 
     $CombinedOptions = @()
@@ -38,11 +58,18 @@ function Read-Menu {
     if ($ExitOption) { $CombinedOptions += $ExitOption }
 
     $OptionsCount = $CombinedOptions.Count
-
-    [System.Console]::CursorVisible = $False
+    $HasTitle = -not [string]::IsNullOrWhiteSpace($MenuTitle)
+    $TitleRowCount = if ($HasTitle) { 1 } else { 0 }
+    $TotalMenuHeight = $OptionsCount + $TitleRowCount
 
     $CurrentIndex = 0
     $StartingRow = [System.Console]::CursorTop
+
+    if ($HasTitle) {
+        Write-MenuTitle -Title $MenuTitle -TitleWidth $TitleWidth
+    }
+
+    [System.Console]::CursorVisible = $False
 
     while ($true) {
         for ($i = 0; $i -lt $OptionsCount; $i++) {
@@ -63,13 +90,13 @@ function Read-Menu {
                     Break
                 }
                 { $_ -in "Enter", "L" } {
-                    Exit-Menu -CleanUpAfter $CleanUpAfter -MenuHeight $OptionsCount -StartingRow $StartingRow
+                    Exit-Menu -CleanUpAfter $CleanUpAfter -ClearFromRow ($StartingRow - $TitleRowCount) -RowsToClear $TotalMenuHeight 
 
                     [System.Console]::CursorVisible = $true
                     Return $CombinedOptions[$CurrentIndex]
                 }
                 { $_ -in "Escape", "Q" -and $ExitOption } {
-                    Exit-Menu -CleanUpAfter $CleanUpAfter -MenuHeight $OptionsCount -StartingRow $StartingRow
+                    Exit-Menu -CleanUpAfter $CleanUpAfter -ClearFromRow ($StartingRow - $TitleRowCount) -RowsToClear $TotalMenuHeight 
 
                     [System.Console]::CursorVisible = $true
                     Return 'Exit'
