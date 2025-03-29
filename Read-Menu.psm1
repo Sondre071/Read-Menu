@@ -14,17 +14,15 @@ function Write-MenuTitle($Title, $TitleWidth) {
 
 function Exit-Menu($CleanUpAfter, $RowsToClear, $ClearFromRow) {
     if ($CleanUpAfter) {
-        $FirstRow = if ($MenuTitle ) { $StartingRow - 1 } else { $StartingRow }
-
-        [System.Console]::SetCursorPosition(0, $FirstRow)
+        [System.Console]::SetCursorPosition(0, $ClearFromRow)
 
         $TerminalWidth = [System.Console]::WindowWidth
 
-        for ($i = 0; $i -lt $RowsToClear + 1; $i++) {
+        for ($i = 0; $i -lt $RowsToClear; $i++) {
             Write-Host (' ' * $TerminalWidth)
         }
 
-        [System.Console]::SetCursorPosition(0, $FirstRow)
+        [System.Console]::SetCursorPosition(0, $ClearFromRow)
     }
     else {
         Write-Host
@@ -109,4 +107,27 @@ function Read-Menu {
     }
 }
 
+function Read-Input() {
+    param (
+        [string]$Instruction = 'You',
+        [string]$Title,
+        [int]$TitleWidth = 30,
+        [switch]$CleanUpAfter
+    )
+
+    $StartingRow = [System.Console]::CursorTop
+
+    Write-MenuTitle -Title $Title -TitleWidth $TitleWidth
+
+    $userInput = Read-Host $Instruction
+
+    $CurrentRow = [System.Console]::CursorTop
+    $RowsToClear = $CurrentRow - $StartingRow
+
+    Exit-Menu -CleanUpAfter $CleanUpAfter -RowsToClear $RowsToClear -ClearFromRow $StartingRow
+
+    return $userInput
+}
+
 Export-ModuleMember -Function Read-Menu
+Export-ModuleMember -Function Read-Input
