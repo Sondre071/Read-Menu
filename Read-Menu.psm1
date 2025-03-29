@@ -5,7 +5,6 @@ function Exit-Menu($CleanUpAfter, $MenuHeight, $StartingRow) {
         $TerminalWidth = [System.Console]::WindowWidth
 
         for ($i = 0; $i -lt $MenuHeight + 1; $i++) {
-            Start-Sleep -Seconds 1
             Write-Host (' ' * $TerminalWidth)
         }
 
