@@ -10,10 +10,8 @@
 
 ### Parameters
 The only parameter requirement is that at least one option is passed in somehow. The rest is optional
-- FirstOptions: An array of options to be placed in front.
 - Options: An array of options to be placed in the middle.
-- LastOptions: An array of options to be placed at the end.
-- ExitOption: A string to be placed at the very end.
+- ExitOption: A string to be placed at the end, and returned when exiting the menu using `esc` or `q`.
 - MenuTitle: A string to render the title of the menu screen.
 - TitleWidth: The number of columns the menu title will be padded to.
   - Default to 40.
