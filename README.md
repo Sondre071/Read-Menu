@@ -13,7 +13,7 @@
 
 ### Parameters
 
-The only parameter requirement is that at least one option is passed in somehow. The rest is optional
+The only parameter requirement is that at least one option is passed in somehow. The rest is optional.
 - Options: An array of options to be placed in the middle.
 - ExitOption: A string to be placed at the end, and returned when exiting the menu using `esc` or `q`.
 - MenuTitle: A string to render the title of the menu screen.

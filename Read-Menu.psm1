@@ -1,18 +1,18 @@
-function Write-MenuTitle($MenuTitle, $MenuTitleWidth = 40) {
-    $titleWithSpaces = " $MenuTitle "
+function Write-MenuHeader($Header, $HeaderWidth = 40) {
+    $headerWithSpaces = " $Header "
 
-    $paddingLength = [Math]::Max(0, ($MenuTitleWidth - $titleWithSpaces.Length) / 2)
+    $paddingLength = [Math]::Max(0, ($HeaderWidth - $headerWithSpaces.Length) / 2)
     $padding = '=' * [Math]::Floor($paddingLength)
-    $line = "$padding$titleWithSpaces$padding"
+    $line = "$padding$headerWithSpaces$padding"
 
-    if ($line.Length -lt $MenuTitleWidth) {
+    if ($line.Length -lt $HeaderWidth) {
         $line += '='
     }
 
     Write-Host $line -ForegroundColor Yellow
 }
 
-function Exit-Menu($CleanUpAfter, $RowsToClear, $ClearFromRow) {
+function Exit-Menu($ClearFromRow, $RowsToClear, $CleanUpAfter) {
     if ($CleanUpAfter) {
         [System.Console]::SetCursorPosition(0, $ClearFromRow)
 
@@ -35,9 +35,11 @@ function Read-Menu {
 
         [string]$ExitOption,
 
-        [string]$MenuTitle,
+        [string]$Header,
 
-        [int]$MenuTitleWidth = 40,
+        [int]$HeaderWidth = 40,
+
+        [string[]]$Subheader,
 
         [string]$MenuTextColor = 'Yellow',
 
@@ -49,22 +51,32 @@ function Read-Menu {
     if ($Options) { $CombinedOptions += $Options }
     if ($ExitOption) { $CombinedOptions += $ExitOption }
 
-    $OptionsCount = $CombinedOptions.Count
-    $HasTitle = -not [string]::IsNullOrWhiteSpace($MenuTitle)
-    $TitleRowCount = if ($HasTitle) { 1 } else { 0 }
-    $TotalMenuHeight = $OptionsCount + $TitleRowCount
+    $CombinedOptionsCount = $CombinedOptions.Count
+    $HasHeader = -not [string]::IsNullOrWhiteSpace($Header)
+    $HasSubheader = $Subheader -gt 0
+
+    $HeaderRowCount = 0
+
+    if ($HasHeader) { $HeaderRowCount++ }
+    if ($HasSubheader) { $HeaderRowCount += $Subheader.Count }
+
+    $TotalMenuHeight = $CombinedOptionsCount + $HeaderRowCount
+
+    if ($HasHeader) {
+        Write-MenuHeader -Header $Header -HeaderWidth $HeaderWidth
+    }
+
+    if ($HasSubheader) {
+        $Subheader | ForEach-Object { Write-Host $_ -ForegroundColor $MenuTextColor }
+    }
 
     $CurrentIndex = 0
     $StartingRow = [System.Console]::CursorTop
 
-    if ($HasTitle) {
-        Write-MenuTitle -MenuTitle $MenuTitle -MenuTitleWidth $MenuTitleWidth
-    }
-
     [System.Console]::CursorVisible = $False
 
     while ($true) {
-        for ($i = 0; $i -lt $OptionsCount; $i++) {
+        for ($i = 0; $i -lt $CombinedOptionsCount; $i++) {
             $color = if ($i -eq $CurrentIndex) { $MenuTextColor } else { 'Gray' }
             Write-Host ">  $($CombinedOptions[$i])" -ForegroundColor $color
         }
@@ -78,17 +90,17 @@ function Read-Menu {
                     Break
                 }
                 { $_ -in "DownArrow", "J" } {
-                    $CurrentIndex = [Math]::Min($OptionsCount - 1, $CurrentIndex + 1)
+                    $CurrentIndex = [Math]::Min($CombinedOptionsCount - 1, $CurrentIndex + 1)
                     Break
                 }
                 { $_ -in "Enter", "L" } {
-                    Exit-Menu -CleanUpAfter $CleanUpAfter -ClearFromRow ($StartingRow - $TitleRowCount) -RowsToClear $TotalMenuHeight 
+                    Exit-Menu -CleanUpAfter $CleanUpAfter -ClearFromRow ($StartingRow - $HeaderRowCount) -RowsToClear $TotalMenuHeight 
 
                     [System.Console]::CursorVisible = $true
                     Return $CombinedOptions[$CurrentIndex]
                 }
                 { $_ -in "Escape", "Q" -and $ExitOption } {
-                    Exit-Menu -CleanUpAfter $CleanUpAfter -ClearFromRow ($StartingRow - $TitleRowCount) -RowsToClear $TotalMenuHeight 
+                    Exit-Menu -CleanUpAfter $CleanUpAfter -ClearFromRow ($StartingRow - $HeaderRowCount) -RowsToClear $TotalMenuHeight 
 
                     [System.Console]::CursorVisible = $true
                     Return $ExitOption
@@ -96,33 +108,35 @@ function Read-Menu {
             }
         }
 
-        $StartingRow = [System.Console]::CursorTop - $OptionsCount
+        $StartingRow = [System.Console]::CursorTop - $CombinedOptionsCount
         [System.Console]::SetCursorPosition(0, $StartingRow)
     }
 }
 
 function Read-Input() {
     param (
+        [string]$Header,
+        [int]$HeaderWidth = 40,
+        [string[]]$Subheader,
         [string]$Instruction = 'You',
-        [string]$MenuTitle,
-        [int]$MenuTitleWidth = 40,
         [switch]$CleanUpAfter
     )
 
     $StartingRow = [System.Console]::CursorTop
 
-    Write-MenuTitle -MenuTitle $MenuTitle -MenuTitleWidth $MenuTitleWidth
+    if ($Header) { Write-MenuHeader -Header $Header -HeaderWidth $HeaderWidth }
+    if ($Subheader) { $Subheader | ForEach-Object { Write-Host $_ -ForegroundColor $MenutextColor } }
 
     $userInput = Read-Host $Instruction
 
     $CurrentRow = [System.Console]::CursorTop
     $RowsToClear = $CurrentRow - $StartingRow
 
-    Exit-Menu -CleanUpAfter $CleanUpAfter -RowsToClear $RowsToClear -ClearFromRow $StartingRow
+    Exit-Menu -ClearFromRow $StartingRow -RowsToClear $RowsToClear -CleanUpAfter $CleanUpAfter 
 
     return $userInput
 }
 
 Export-ModuleMember -Function Read-Menu
 Export-ModuleMember -Function Read-Input
-Export-ModuleMember -Function Write-MenuTitle
+Export-ModuleMember -Function Write-MenuHeader
