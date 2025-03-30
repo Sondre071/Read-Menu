@@ -1,11 +1,11 @@
-function Write-MenuTitle($Title, $TitleWidth) {
-    $titleWithSpaces = " $Title "
+function Write-MenuTitle($MenuTitle, $MenuTitleWidth = 40) {
+    $titleWithSpaces = " $MenuTitle "
 
-    $paddingLength = [Math]::Max(0, ($TitleWidth - $titleWithSpaces.Length) / 2)
+    $paddingLength = [Math]::Max(0, ($MenuTitleWidth - $titleWithSpaces.Length) / 2)
     $padding = '=' * [Math]::Floor($paddingLength)
     $line = "$padding$titleWithSpaces$padding"
 
-    if ($line.Length -lt $TitleWidth) {
+    if ($line.Length -lt $MenuTitleWidth) {
         $line += '='
     }
 
@@ -37,7 +37,7 @@ function Read-Menu {
 
         [string]$MenuTitle,
 
-        [int]$TitleWidth = 40,
+        [int]$MenuTitleWidth = 40,
 
         [string]$MenuTextColor = 'Yellow',
 
@@ -46,9 +46,7 @@ function Read-Menu {
 
     $CombinedOptions = @()
 
-    if ($FirstOptions) { $CombinedOptions += $FirstOptions }
     if ($Options) { $CombinedOptions += $Options }
-    if ($LastOptions) { $CombinedOptions += $LastOptions }
     if ($ExitOption) { $CombinedOptions += $ExitOption }
 
     $OptionsCount = $CombinedOptions.Count
@@ -60,7 +58,7 @@ function Read-Menu {
     $StartingRow = [System.Console]::CursorTop
 
     if ($HasTitle) {
-        Write-MenuTitle -Title $MenuTitle -TitleWidth $TitleWidth
+        Write-MenuTitle -MenuTitle $MenuTitle -MenuTitleWidth $MenuTitleWidth
     }
 
     [System.Console]::CursorVisible = $False
@@ -106,14 +104,14 @@ function Read-Menu {
 function Read-Input() {
     param (
         [string]$Instruction = 'You',
-        [string]$Title,
-        [int]$TitleWidth = 40,
+        [string]$MenuTitle,
+        [int]$MenuTitleWidth = 40,
         [switch]$CleanUpAfter
     )
 
     $StartingRow = [System.Console]::CursorTop
 
-    Write-MenuTitle -Title $Title -TitleWidth $TitleWidth
+    Write-MenuTitle -MenuTitle $MenuTitle -MenuTitleWidth $MenuTitleWidth
 
     $userInput = Read-Host $Instruction
 
