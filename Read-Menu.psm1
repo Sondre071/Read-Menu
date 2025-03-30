@@ -41,7 +41,7 @@ function Read-Menu {
 
         [string]$MenuTitle,
 
-        [int]$TitleWidth = 30,
+        [int]$TitleWidth = 40,
 
         [string]$MenuTextColor = 'Yellow',
 
@@ -111,7 +111,7 @@ function Read-Input() {
     param (
         [string]$Instruction = 'You',
         [string]$Title,
-        [int]$TitleWidth = 30,
+        [int]$TitleWidth = 40,
         [switch]$CleanUpAfter
     )
 
@@ -131,3 +131,4 @@ function Read-Input() {
 
 Export-ModuleMember -Function Read-Menu
 Export-ModuleMember -Function Read-Input
+Export-ModuleMember -Function Write-MenuTitle
