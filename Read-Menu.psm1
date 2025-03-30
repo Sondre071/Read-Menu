@@ -33,10 +33,6 @@ function Read-Menu {
     param (
         [string[]]$Options,
 
-        [string[]]$FirstOptions,
-
-        [string[]]$LastOptions,
-
         [string]$ExitOption,
 
         [string]$MenuTitle,
@@ -97,7 +93,7 @@ function Read-Menu {
                     Exit-Menu -CleanUpAfter $CleanUpAfter -ClearFromRow ($StartingRow - $TitleRowCount) -RowsToClear $TotalMenuHeight 
 
                     [System.Console]::CursorVisible = $true
-                    Return 'Exit'
+                    Return $ExitOption
                 }
             }
         }
