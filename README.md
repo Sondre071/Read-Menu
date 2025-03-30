@@ -3,10 +3,10 @@
 
 ## Installation
 - Clone the repo into your windows modules folder.
-  - Or alternatively any other folder within your PSScriptPath.
+  - Or alternatively into any folder within your PSScriptPath.
 
 ## Usage
-- Invoke the module with the keyword `Read-Menu`.
+- Invoke the module using the keyword `Read-Menu`.
 
 ### Parameters
 The only parameter requirement is that at least one option is passed in somehow. The rest is optional
