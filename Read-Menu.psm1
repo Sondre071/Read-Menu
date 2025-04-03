@@ -82,23 +82,23 @@ function Read-Menu {
             switch ($keyInfo.Key) {
                 { $_ -in "UpArrow", "K" } {
                     $currentIndex = [Math]::Max(0, $currentIndex - 1)
-                    Break
+                    break
                 }
                 { $_ -in "DownArrow", "J" } {
                     $currentIndex = [Math]::Min($combinedOptionsHeight - 1, $currentIndex + 1)
-                    Break
+                    break
                 }
                 { $_ -in "Enter", "L" } {
                     Exit-Menu -TotalMenuHeight $totalMenuHeight -CleanUpAfter $CleanUpAfter 
 
                     [System.Console]::CursorVisible = $true
-                    Return $combinedOptions[$currentIndex]
+                    return $combinedOptions[$currentIndex]
                 }
                 { $_ -in "Escape", "Q" -and $ExitOption } {
                     Exit-Menu -TotalMenuHeight $totalMenuHeight -CleanUpAfter $CleanUpAfter 
 
                     [System.Console]::CursorVisible = $true
-                    Return $ExitOption
+                    return $ExitOption
                 }
             }
         }

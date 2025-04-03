@@ -14,11 +14,13 @@
 ### Parameters
 
 The only parameter requirement is that at least one option is passed in somehow. The rest is optional.
+
 - Options: An array of options to be placed in the middle.
 - ExitOption: A string to be placed at the end, and returned when exiting the menu using `esc` or `q`.
-- MenuTitle: A string to render the title of the menu screen.
-- TitleWidth: The number of columns the menu title will be padded to.
-  - Default to 40.
+- Header: A string to render the title of the menu screen.
+- HeaderWidth: The number of columns the menu title will be added to.
+  - Defauls to 40.
+- Subheader: An array to render beneath the menu header.
 - MenuTextColor: The foreground color of the selected index, and the title.
   - Defaults to yellow.
 - CleanUpAfter: Clean up the menu and move the cursor back into base position upon returning.
@@ -27,4 +29,4 @@ The only parameter requirement is that at least one option is passed in somehow.
 
 `$options = ('Pull', 'Fetch all', 'Commit', 'Add new command')`
 
-`$action = Read-Menu -MenuTitle 'Select action' -Options $options -ExitOption 'Exit' -CleanUpAfter `
+`$action = Read-Menu -Header 'Select action' -Options $options -ExitOption 'Exit' -CleanUpAfter`
