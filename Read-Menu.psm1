@@ -76,7 +76,15 @@ function Read-Menu {
             Write-Host ">  $($combinedOptions[$i])" -ForegroundColor $color
         }
 
-        $keyInfo = [Console]::ReadKey($true)
+        $keyInfo
+
+        # ReadKey is nested in a loop to enable script termination through SIGINT, AKA CTRL+C.
+        while ($true) {
+            if ([Console]::KeyAvailable) {
+                $keyInfo = [Console]::ReadKey($true)
+                break
+            }
+        }
 
         switch ($keyInfo.Key) {
             { $_ -in "UpArrow", "K" } {
