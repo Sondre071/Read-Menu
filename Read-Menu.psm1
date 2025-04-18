@@ -76,30 +76,28 @@ function Read-Menu {
             Write-Host ">  $($combinedOptions[$i])" -ForegroundColor $color
         }
 
-        if ([Console]::KeyAvailable) {
-            $keyInfo = [Console]::ReadKey($true)
+        $keyInfo = [Console]::ReadKey($true)
 
-            switch ($keyInfo.Key) {
-                { $_ -in "UpArrow", "K" } {
-                    $currentIndex = [Math]::Max(0, $currentIndex - 1)
-                    break
-                }
-                { $_ -in "DownArrow", "J" } {
-                    $currentIndex = [Math]::Min($combinedOptionsHeight - 1, $currentIndex + 1)
-                    break
-                }
-                { $_ -in "Enter", "L" } {
-                    Exit-Menu -TotalMenuHeight $totalMenuHeight -CleanUpAfter $CleanUpAfter 
+        switch ($keyInfo.Key) {
+            { $_ -in "UpArrow", "K" } {
+                $currentIndex = [Math]::Max(0, $currentIndex - 1)
+                break
+            }
+            { $_ -in "DownArrow", "J" } {
+                $currentIndex = [Math]::Min($combinedOptionsHeight - 1, $currentIndex + 1)
+                break
+            }
+            { $_ -in "Enter", "L" } {
+                Exit-Menu -TotalMenuHeight $totalMenuHeight -CleanUpAfter $CleanUpAfter 
 
-                    [System.Console]::CursorVisible = $true
-                    return $combinedOptions[$currentIndex]
-                }
-                { $_ -in "Escape", "Q" -and $ExitOption } {
-                    Exit-Menu -TotalMenuHeight $totalMenuHeight -CleanUpAfter $CleanUpAfter 
+                [System.Console]::CursorVisible = $true
+                return $combinedOptions[$currentIndex]
+            }
+            { $_ -in "Escape", "Q", "H" -and $ExitOption } {
+                Exit-Menu -TotalMenuHeight $totalMenuHeight -CleanUpAfter $CleanUpAfter 
 
-                    [System.Console]::CursorVisible = $true
-                    return $ExitOption
-                }
+                [System.Console]::CursorVisible = $true
+                return $ExitOption
             }
         }
 
