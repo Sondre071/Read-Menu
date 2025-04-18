@@ -76,7 +76,7 @@ function Read-Menu {
             Write-Host ">  $($combinedOptions[$i])" -ForegroundColor $color
         }
 
-        $keyInfo
+        $keyInfo = $null
 
         # ReadKey is nested in a loop to enable script termination through SIGINT, AKA CTRL+C.
         while ($true) {
@@ -101,7 +101,7 @@ function Read-Menu {
                 [System.Console]::CursorVisible = $true
                 return $combinedOptions[$currentIndex]
             }
-            { $_ -in "Escape", "Q", "H" -and $ExitOption } {
+            { ($_ -in ("Escape", "Q", "H")) -and $ExitOption } {
                 Exit-Menu -TotalMenuHeight $totalMenuHeight -CleanUpAfter $CleanUpAfter 
 
                 [System.Console]::CursorVisible = $true
