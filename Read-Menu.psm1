@@ -109,6 +109,7 @@ function Read-Menu {
             }
         }
 
+        # This is to correct for when the terminal scrolls after rendering the menu.
         $startingRow = [System.Console]::CursorTop - $combinedOptionsHeight
         [System.Console]::SetCursorPosition(0, $startingRow)
     }
