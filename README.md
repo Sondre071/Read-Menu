@@ -26,7 +26,23 @@ The only parameter requirement is that at least one option is passed in somehow.
 - CleanUpAfter: Clean up the menu and move the cursor back into base position upon returning.
 
 ## Example
+```console
+$options = ('Pull', 'Fetch all', 'Commit', 'Add new command')
 
-`$options = ('Pull', 'Fetch all', 'Commit', 'Add new command')`
+$action = Read-Menu -Header 'Select action' -Options $options -ExitOption 'Exit' -CleanUpAfter
 
-`$action = Read-Menu -Header 'Select action' -Options $options -ExitOption 'Exit' -CleanUpAfter`
+switch($action) {
+  case 'Pull':
+    ...
+
+  case 'Fetch all':
+    ...
+
+  case 'Commit':
+    ...
+
+  case 'Add new command':
+    ...
+
+}
+```
