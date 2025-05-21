@@ -1,6 +1,6 @@
 # Read-Menu
 
-- A clean, disposable menu to render options from an array.
+- A clean, disposable menu to render an array of options.
 
 ## Installation
 
@@ -15,7 +15,7 @@
 
 The only parameter requirement is that at least one option is passed in somehow. The rest is optional.
 
-- Options: An array of options to be placed in the middle.
+- Options: An array of options.
 - ExitOption: A string to be placed at the end, and returned when exiting the menu using `esc`, `q` or `h`.
 - Header: A string to render the title of the menu screen.
 - HeaderWidth: The number of columns the menu title will be added to.
