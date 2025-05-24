@@ -116,16 +116,22 @@ function Read-Menu {
 function Read-Input() {
     param (
         [string]$Header,
+
         [int]$HeaderWidth = 40,
+
         [string[]]$Subheaders,
+
         [string]$Instruction = 'You',
+
+        [string]$MenuTextColor = 'Yellow',
+
         [switch]$CleanUpAfter
     )
 
     $startingRow = [System.Console]::CursorTop
 
     if ($Header) { Write-MenuHeader -Header $Header -HeaderWidth $HeaderWidth }
-    if ($Subheaders) { $Subheaders | ForEach-Object { Write-Host $_ -ForegroundColor $MenutextColor } }
+    if ($Subheaders -gt 0) { $Subheaders | ForEach-Object { Write-Host $_ -ForegroundColor $MenuTextColor } }
 
     $userInput = Read-Host $Instruction
 
