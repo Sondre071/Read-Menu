@@ -34,7 +34,7 @@ function Read-Menu {
 
         [int]$HeaderWidth = 40,
 
-        [string[]]$Subheader,
+        [string[]]$Subheaders,
 
         [string]$MenuTextColor = 'Yellow',
 
@@ -47,12 +47,12 @@ function Read-Menu {
     if ($ExitOption) { $CombinedOptions += $ExitOption }
 
     $hasHeader = -not [string]::IsNullOrWhiteSpace($Header)
-    $hasSubheader = $Subheader -gt 0
+    $hasSubheaders = $Subheaders -gt 0
 
     $headerRowCount = 0
 
     if ($hasHeader) { $headerRowCount++ }
-    if ($hasSubheader) { $headerRowCount += $subheader.Count }
+    if ($hasSubheaders) { $headerRowCount += $Subheaders.Count }
 
     $combinedOptionsHeight = $combinedOptions.Count
     $totalMenuHeight = $combinedOptionsHeight + $headerRowCount
@@ -61,8 +61,8 @@ function Read-Menu {
         Write-MenuHeader -Header $Header -HeaderWidth $HeaderWidth
     }
 
-    if ($hasSubheader) {
-        $Subheader | ForEach-Object { Write-Host $_ -ForegroundColor $MenuTextColor }
+    if ($hasSubheaders) {
+        $Subheaders | ForEach-Object { Write-Host $_ -ForegroundColor $MenuTextColor }
     }
 
     $currentIndex = 0
@@ -117,7 +117,7 @@ function Read-Input() {
     param (
         [string]$Header,
         [int]$HeaderWidth = 40,
-        [string[]]$Subheader,
+        [string[]]$Subheaders,
         [string]$Instruction = 'You',
         [switch]$CleanUpAfter
     )
@@ -125,7 +125,7 @@ function Read-Input() {
     $startingRow = [System.Console]::CursorTop
 
     if ($Header) { Write-MenuHeader -Header $Header -HeaderWidth $HeaderWidth }
-    if ($Subheader) { $Subheader | ForEach-Object { Write-Host $_ -ForegroundColor $MenutextColor } }
+    if ($Subheaders) { $Subheaders | ForEach-Object { Write-Host $_ -ForegroundColor $MenutextColor } }
 
     $userInput = Read-Host $Instruction
 

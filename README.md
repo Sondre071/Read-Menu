@@ -20,7 +20,7 @@ The only parameter requirement is that at least one option is passed in somehow.
 - Header: A string to render the title of the menu screen.
 - HeaderWidth: The number of columns the menu title will be added to.
   - Defauls to 40.
-- Subheader: An array to render beneath the menu header.
+- Subheaders: An array to render beneath the menu header.
 - MenuTextColor: The foreground color of the selected index, and the title.
   - Defaults to yellow.
 - CleanUpAfter: Clean up the menu and move the cursor back into base position upon returning.
