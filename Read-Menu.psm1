@@ -12,16 +12,11 @@ function Write-MenuHeader($Header, $HeaderWidth = 40) {
     Write-Host $line -ForegroundColor Yellow
 }
 
-function Exit-Menu($TotalMenuHeight, $CleanUpAfter) {
-    if ($CleanUpAfter) {
+function Clear-Menu($TotalMenuHeight) {
 
-        # Jump $TotalMenuHeight lines up and clear everything below.
-        Write-Host "$([char]27)[$($TotalMenuHeight)A" -NoNewLine
-        Write-Host "$([char]27)[0J" -NoNewLine
-    }
-    else {
-        Write-Host
-    }
+    # Jump $TotalMenuHeight lines up and clear everything below.
+    Write-Host "$([char]27)[$($TotalMenuHeight)A" -NoNewLine
+    Write-Host "$([char]27)[0J" -NoNewLine
 }
 
 function Read-Menu {
@@ -36,9 +31,7 @@ function Read-Menu {
 
         [string[]]$Subheaders,
 
-        [string]$MenuTextColor = 'Yellow',
-
-        [switch]$CleanUpAfter
+        [string]$MenuTextColor = 'Yellow'
     )
 
     $combinedOptions = @()
@@ -94,13 +87,13 @@ function Read-Menu {
                 $currentIndex = [Math]::Min($combinedOptionsHeight - 1, $currentIndex + 1)
             }
             { $_ -in "Enter", "L" } {
-                Exit-Menu -TotalMenuHeight $totalMenuHeight -CleanUpAfter $CleanUpAfter 
+                Clear-Menu -TotalMenuHeight $totalMenuHeight
 
                 [System.Console]::CursorVisible = $true
                 return $combinedOptions[$currentIndex]
             }
             { ($_ -in ("Escape", "Q", "H")) -and $ExitOption } {
-                Exit-Menu -TotalMenuHeight $totalMenuHeight -CleanUpAfter $CleanUpAfter 
+                Clear-Menu -TotalMenuHeight $totalMenuHeight
 
                 [System.Console]::CursorVisible = $true
                 return $ExitOption
@@ -123,9 +116,7 @@ function Read-Input() {
 
         [string]$Instruction = 'You',
 
-        [string]$MenuTextColor = 'Yellow',
-
-        [switch]$CleanUpAfter
+        [string]$MenuTextColor = 'Yellow'
     )
 
     $startingRow = [System.Console]::CursorTop
@@ -138,7 +129,7 @@ function Read-Input() {
     $currentRow = [System.Console]::CursorTop
     $totalMenuHeight = $currentRow - $startingRow
 
-    Exit-Menu -TotalMenuHeight $TotalMenuHeight -CleanUpAfter $CleanUpAfter 
+    Clear-Menu -TotalMenuHeight $TotalMenuHeight
 
     return $userInput
 }
