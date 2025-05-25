@@ -1,5 +1,13 @@
 function Write-MenuHeader($Header, $HeaderWidth = 40) {
-    $headerWithSpaces = " $Header "
+
+    $headerMaxLength = $HeaderWidth - 12
+
+    if ($Header.Length -gt $headerMaxLength) {
+        $truncatedHeader = $Header.Substring(0, $headerMaxLength) + '..'
+        $headerWithSpaces = " $truncatedHeader "
+    } else {
+        $headerWithSpaces = " $Header "
+    }
 
     $paddingLength = [Math]::Max(0, ($HeaderWidth - $headerWithSpaces.Length) / 2)
     $padding = '=' * [Math]::Floor($paddingLength)
@@ -40,7 +48,7 @@ function Read-Menu {
     if ($ExitOption) { $CombinedOptions += $ExitOption }
 
     $hasHeader = -not [string]::IsNullOrWhiteSpace($Header)
-    $hasSubheaders = $Subheaders -gt 0
+    $hasSubheaders = $Subheaders.Count -gt 0
 
     $headerRowCount = 0
 
