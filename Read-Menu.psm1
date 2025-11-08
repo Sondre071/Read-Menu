@@ -1,23 +1,41 @@
 function Write-MenuHeader() {
     param (
         [string]$Header,
+        [System.Nullable[int]]$HeaderLeftPadding = $null,
         [int]$HeaderWidth = 40,
         [char]$HeaderSymbol = '='
     )
-    $headerMaxLength = $HeaderWidth - 12
+
+    # Minus two for padding around the header.
+    $headerMaxLength = $HeaderWidth - 2
+
+    if ($null -eq $HeaderLeftPadding) { $headerMaxLength = $headerMaxLength - 10 }
+
+    $header = $Header
 
     if ($Header.Length -gt $headerMaxLength) {
         $truncatedHeader = $Header.Substring(0, $headerMaxLength) + '..'
-        $headerWithSpaces = " $truncatedHeader "
+        $header = $truncatedHeader
+    }
+
+    $line = ""
+
+    if ($null -ne $HeaderLeftPadding) {
+        $paddingLengthRight = $headerMaxLength - $HeaderLeftPadding - $header.Length
+
+        $leftPadding = "$HeaderSymbol" * $HeaderLeftPadding
+        $rightPadding = "$HeaderSymbol" * $paddingLengthRight
+
+        $line = "$leftPadding $header $rightPadding"
     }
     else {
-        $headerWithSpaces = " $Header "
+        $paddingLength = [Math]::Max(0, ($HeaderWidth - $headerWithSpaces.Length) / 2)
+        $padding = "$HeaderSymbol" * [Math]::Floor($paddingLength)
+
+        $line = "$padding $header $padding"
     }
 
-    $paddingLength = [Math]::Max(0, ($HeaderWidth - $headerWithSpaces.Length) / 2)
-    $padding = "$HeaderSymbol" * [Math]::Floor($paddingLength)
-    $line = "$padding$headerWithSpaces$padding"
-
+    # In case not every slot is filled.
     if ($line.Length -lt $HeaderWidth) {
         $line += "$HeaderSymbol"
     }
@@ -39,6 +57,8 @@ function Read-Menu {
         [object]$ExitOption,
 
         [string]$Header,
+
+        [System.Nullable[int]]$HeaderLeftPadding = $null,
 
         [char]$HeaderSymbol = '=',
 
@@ -68,6 +88,7 @@ function Read-Menu {
     if ($hasHeader) {
         Write-MenuHeader `
             -Header $Header `
+            -HeaderLeftPadding $HeaderLeftPadding `
             -HeaderWidth $HeaderWidth `
             -HeaderSymbol $HeaderSymbol
     }
@@ -139,6 +160,8 @@ function Read-Input() {
     param (
         [string]$Header,
 
+        [System.Nullable[int]]$HeaderLeftPadding = $null,
+
         [char]$HeaderSymbol = '=',
 
         [int]$HeaderWidth = 40,
@@ -155,6 +178,7 @@ function Read-Input() {
     if ($Header) {
         Write-MenuHeader `
             -Header $Header `
+            -HeaderLeftPadding $HeaderLeftPadding `
             -HeaderSymbol $HeaderSymbol `
             -HeaderWidth $HeaderWidth
     }
