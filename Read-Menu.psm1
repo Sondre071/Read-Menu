@@ -34,9 +34,9 @@ function Clear-Menu($TotalMenuHeight) {
 
 function Read-Menu {
     param (
-        [string[]]$Options,
+        [object[]]$Options,
 
-        [string]$ExitOption,
+        [object]$ExitOption,
 
         [string]$Header,
 
@@ -85,8 +85,17 @@ function Read-Menu {
 
     while ($true) {
         for ($i = 0; $i -lt $combinedOptionsHeight; $i++) {
+            $option = $combinedOptions[$i]
+
+            # Uses the option's name if there is any. Else uses the option itself.
+            $optionText = ($null -ne $option.Name) ? $option.Name : $option 
+
+            # Uses the icon if there is any.
+            $optionIcon = ($null -ne $option.Icon) ? "$($option.Icon) " : '' 
+
             $color = if ($i -eq $currentIndex) { $MenuTextColor } else { 'Gray' }
-            Write-Host ">  $($combinedOptions[$i])" -ForegroundColor $color
+
+            Write-Host "> $optionIcon$optionText" -ForegroundColor $color
         }
 
         $keyInfo = $null
