@@ -1,20 +1,25 @@
-function Write-MenuHeader($Header, $HeaderWidth = 40) {
-
+function Write-MenuHeader() {
+    param (
+        [string]$Header,
+        [int]$HeaderWidth = 40,
+        [char]$HeaderSymbol = '='
+    )
     $headerMaxLength = $HeaderWidth - 12
 
     if ($Header.Length -gt $headerMaxLength) {
         $truncatedHeader = $Header.Substring(0, $headerMaxLength) + '..'
         $headerWithSpaces = " $truncatedHeader "
-    } else {
+    }
+    else {
         $headerWithSpaces = " $Header "
     }
 
     $paddingLength = [Math]::Max(0, ($HeaderWidth - $headerWithSpaces.Length) / 2)
-    $padding = '=' * [Math]::Floor($paddingLength)
+    $padding = "$HeaderSymbol" * [Math]::Floor($paddingLength)
     $line = "$padding$headerWithSpaces$padding"
 
     if ($line.Length -lt $HeaderWidth) {
-        $line += '='
+        $line += "$HeaderSymbol"
     }
 
     Write-Host $line -ForegroundColor Yellow
@@ -34,6 +39,8 @@ function Read-Menu {
         [string]$ExitOption,
 
         [string]$Header,
+
+        [char]$HeaderSymbol = '=',
 
         [int]$HeaderWidth = 40,
 
@@ -59,11 +66,16 @@ function Read-Menu {
     $totalMenuHeight = $combinedOptionsHeight + $headerRowCount
 
     if ($hasHeader) {
-        Write-MenuHeader -Header $Header -HeaderWidth $HeaderWidth
+        Write-MenuHeader `
+            -Header $Header `
+            -HeaderWidth $HeaderWidth `
+            -HeaderSymbol $HeaderSymbol
     }
 
     if ($hasSubheaders) {
-        $Subheaders | ForEach-Object { Write-Host $_ -ForegroundColor $MenuTextColor }
+        $Subheaders | ForEach-Object {
+            Write-Host $_ -ForegroundColor $MenuTextColor
+        }
     }
 
     $currentIndex = 0
@@ -118,6 +130,8 @@ function Read-Input() {
     param (
         [string]$Header,
 
+        [char]$HeaderSymbol = '=',
+
         [int]$HeaderWidth = 40,
 
         [string[]]$Subheaders,
@@ -129,8 +143,17 @@ function Read-Input() {
 
     $startingRow = [System.Console]::CursorTop
 
-    if ($Header) { Write-MenuHeader -Header $Header -HeaderWidth $HeaderWidth }
-    if ($Subheaders -gt 0) { $Subheaders | ForEach-Object { Write-Host $_ -ForegroundColor $MenuTextColor } }
+    if ($Header) {
+        Write-MenuHeader `
+            -Header $Header `
+            -HeaderSymbol $HeaderSymbol `
+            -HeaderWidth $HeaderWidth
+    }
+    if ($Subheaders -gt 0) {
+        $Subheaders | ForEach-Object {
+            Write-Host $_ -ForegroundColor $MenuTextColor
+        }
+    }
 
     $userInput = Read-Host $Instruction
 
