@@ -115,8 +115,11 @@ function Read-Menu {
             $optionIcon = ($null -ne $option.Icon) ? "$($option.Icon) " : '' 
 
             $color = if ($i -eq $currentIndex) { $MenuTextColor } else { 'Gray' }
+            $prefix = $i -eq $currentIndex ? '> ' : '  '
 
-            Write-Host "> $optionIcon$optionText" -ForegroundColor $color
+            $line = $prefix + $optionIcon + $optionText
+
+            Write-Host $line -ForegroundColor $color
         }
 
         $keyInfo = $null
