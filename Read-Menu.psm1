@@ -51,10 +51,10 @@ function Write-MenuHeader() {
     Write-Host $line -ForegroundColor $Color
 }
 
-function Clear-Menu($TotalMenuHeight) {
+function Clear-Menu([int]$Height) {
 
-    # Jump $TotalMenuHeight lines up and clear everything below.
-    Write-Host "`e[$($TotalMenuHeight)A" -NoNewLine
+    # Jump $Height lines up and clear everything below.
+    Write-Host "`e[$($Height)A" -NoNewLine
     Write-Host "`e[0J" -NoNewLine
 }
 
@@ -65,7 +65,7 @@ function Read-Menu {
 
         [object]$ExitOption,
 
-        [System.Nullable[string]]$Header,
+        [string]$Header,
 
         [System.Nullable[char]]$HeaderSymbol = '=',
 
@@ -101,7 +101,7 @@ function Read-Menu {
 
     if ($hasSubheaders) {
         $Subheaders | ForEach-Object {
-            Write-Host $_ -ForegroundColor $MenuTextColor
+            Write-Host $_ -ForegroundColor $Color
         }
     }
 
@@ -114,18 +114,16 @@ function Read-Menu {
         for ($i = 0; $i -lt $combinedOptionsHeight; $i++) {
             $option = $combinedOptions[$i]
 
-            # Uses the option's name if there is any. Else uses the option itself.
-            $optionText = ($null -ne $option.Name) ? $option.Name : $option 
+            $optionText = $option.Name ?? $option 
 
-            # Uses the icon if there is any.
             $optionIcon = ($null -ne $option.Icon) ? "$($option.Icon) " : '' 
 
-            $color = if ($i -eq $currentIndex) { $MenuTextColor } else { 'Gray' }
+            $lineColor = if ($i -eq $currentIndex) { $Color } else { 'Gray' }
             $prefix = $i -eq $currentIndex ? '> ' : '  '
 
             $line = $prefix + $optionIcon + $optionText
 
-            Write-Host $line -ForegroundColor $color
+            Write-Host $line -ForegroundColor $lineColor
         }
 
         $keyInfo = $null
@@ -146,13 +144,13 @@ function Read-Menu {
                 $currentIndex = [Math]::Min($combinedOptionsHeight - 1, $currentIndex + 1)
             }
             { $_ -in "Enter", "L" } {
-                Clear-Menu -TotalMenuHeight $totalMenuHeight
+                Clear-Menu -Height $totalMenuHeight
 
                 [System.Console]::CursorVisible = $true
                 return $combinedOptions[$currentIndex]
             }
             { ($_ -in ("Escape", "Q", "H")) -and $ExitOption } {
-                Clear-Menu -TotalMenuHeight $totalMenuHeight
+                Clear-Menu -Height $totalMenuHeight
 
                 [System.Console]::CursorVisible = $true
                 return $ExitOption
@@ -177,7 +175,7 @@ function Read-Input() {
 
         [string]$Instruction = 'You',
 
-        [string]$MenuTextColor = 'Yellow'
+        [string]$Color = 'Yellow'
     )
 
     $startingRow = [System.Console]::CursorTop
@@ -190,7 +188,7 @@ function Read-Input() {
     }
     if ($Subheaders -gt 0) {
         $Subheaders | ForEach-Object {
-            Write-Host $_ -ForegroundColor $MenuTextColor
+            Write-Host $_ -ForegroundColor $Color
         }
     }
 
@@ -199,7 +197,7 @@ function Read-Input() {
     $currentRow = [System.Console]::CursorTop
     $totalMenuHeight = $currentRow - $startingRow
 
-    Clear-Menu -TotalMenuHeight $TotalMenuHeight
+    Clear-Menu -Height $TotalMenuHeight
 
     return $userInput
 }
