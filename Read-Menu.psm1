@@ -115,11 +115,10 @@ function Read-Menu {
             $option = $combinedOptions[$i]
 
             $optionText = $option.Name ?? $option 
+            $optionIcon = "$($option.Icon ?? $null)"
 
-            $optionIcon = ($null -ne $option.Icon) ? "$($option.Icon) " : '' 
-
-            $lineColor = if ($i -eq $currentIndex) { $Color } else { 'Gray' }
-            $prefix = $i -eq $currentIndex ? '> ' : '  '
+            $lineColor = ($i -eq $currentIndex) ? $Color : 'Gray'
+            $prefix = ($i -eq $currentIndex) ? '> ' : '  '
 
             $line = $prefix + $optionIcon + $optionText
 
