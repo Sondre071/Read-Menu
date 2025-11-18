@@ -7,6 +7,8 @@ function Write-MenuHeader() {
 
         [System.Nullable[char]]$HeaderSymbol = '=',
 
+        [string[]]$Subheaders,
+
         [string]$Color = 'Yellow'
     )
 
@@ -49,6 +51,15 @@ function Write-MenuHeader() {
     }
 
     Write-Host $line -ForegroundColor $Color
+
+    if ($SubHeaders.Count -gt 0) {
+        $Subheaders | ForEach-Object {
+            Write-Host $_ -ForegroundColor $Color
+        }
+
+        Write-Host
+    }
+
 }
 
 function Clear-Menu([int]$Height) {
