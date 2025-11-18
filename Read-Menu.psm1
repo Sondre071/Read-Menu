@@ -1,72 +1,79 @@
 function Write-MenuHeader() {
     param (
+        [Parameter(Mandatory)]
         [string]$Header,
-        [System.Nullable[int]]$HeaderLeftPadding = $null,
-        [int]$HeaderWidth = 40,
-        [char]$HeaderSymbol = '='
+
+        [System.Nullable[int]]$HeaderWidth = 40,
+
+        [System.Nullable[char]]$HeaderSymbol = '=',
+
+        [string]$Color = 'Yellow'
     )
 
-    # Minus two for padding around the header.
-    $headerMaxLength = $HeaderWidth - 2
-
-    if ($null -eq $HeaderLeftPadding) { $headerMaxLength = $headerMaxLength - 10 }
-
-    $header = $Header
-
-    if ($Header.Length -gt $headerMaxLength) {
-        $truncatedHeader = $Header.Substring(0, $headerMaxLength) + '..'
-        $header = $truncatedHeader
+    $maxLen = & {
+        if ($null -eq $HeaderWidth) {
+            return $null
+        }
+        elseif ($null -eq $HeaderSymbol) {
+            return $HeaderWidth
+        }
+        else {
+            return $HeaderWidth - 4
+        }
     }
 
-    $line = ""
-
-    if ($null -ne $HeaderLeftPadding) {
-        $paddingLengthRight = $headerMaxLength - $HeaderLeftPadding - $header.Length
-
-        $leftPadding = "$HeaderSymbol" * $HeaderLeftPadding
-        $rightPadding = "$HeaderSymbol" * $paddingLengthRight
-
-        $line = "$leftPadding $header $rightPadding"
-    }
-    else {
-        $paddingLength = [Math]::Max(0, ($HeaderWidth - $headerWithSpaces.Length) / 2)
-        $padding = "$HeaderSymbol" * [Math]::Floor($paddingLength)
-
-        $line = "$padding $header $padding"
+    if (
+        ($null -eq $maxLen)
+    ) {
+        Write-Host $line -ForegroundColor $Color
+        return
     }
 
-    # In case not every slot is filled.
-    if ($line.Length -lt $HeaderWidth) {
-        $line += "$HeaderSymbol"
+    if ($Header.Length -gt $maxLen) {
+        $Header = $Header.Substring(0, $maxLen - 2) + '..'
     }
 
-    Write-Host $line -ForegroundColor Yellow
+    $line = & {
+        if ($null -eq $HeaderSymbol) {
+            return $Header
+        }
+        else {
+            $inner = " $Header "
+            $pad = $HeaderWidth - $inner.Length
+
+            $left = [Math]::Floor($pad / 2)
+            $right = $pad - $left
+
+            return ("$HeaderSymbol" * $left) + $inner + ("$HeaderSymbol" * $right)
+        }
+    }
+
+    Write-Host $line -ForegroundColor $Color
 }
 
 function Clear-Menu($TotalMenuHeight) {
 
     # Jump $TotalMenuHeight lines up and clear everything below.
-    Write-Host "$([char]27)[$($TotalMenuHeight)A" -NoNewLine
-    Write-Host "$([char]27)[0J" -NoNewLine
+    Write-Host "`e[$($TotalMenuHeight)A" -NoNewLine
+    Write-Host "`e[0J" -NoNewLine
 }
 
 function Read-Menu {
     param (
+        [Parameter(Mandatory)]
         [object[]]$Options,
 
         [object]$ExitOption,
 
-        [string]$Header,
+        [System.Nullable[string]]$Header,
 
-        [System.Nullable[int]]$HeaderLeftPadding = $null,
+        [System.Nullable[char]]$HeaderSymbol = '=',
 
-        [char]$HeaderSymbol = '=',
-
-        [int]$HeaderWidth = 40,
+        [System.Nullable[int]]$HeaderWidth = 40,
 
         [string[]]$Subheaders,
 
-        [string]$MenuTextColor = 'Yellow'
+        [string]$Color = 'Yellow'
     )
 
     $combinedOptions = @()
@@ -88,7 +95,6 @@ function Read-Menu {
     if ($hasHeader) {
         Write-MenuHeader `
             -Header $Header `
-            -HeaderLeftPadding $HeaderLeftPadding `
             -HeaderWidth $HeaderWidth `
             -HeaderSymbol $HeaderSymbol
     }
@@ -163,8 +169,6 @@ function Read-Input() {
     param (
         [string]$Header,
 
-        [System.Nullable[int]]$HeaderLeftPadding = $null,
-
         [char]$HeaderSymbol = '=',
 
         [int]$HeaderWidth = 40,
@@ -181,7 +185,6 @@ function Read-Input() {
     if ($Header) {
         Write-MenuHeader `
             -Header $Header `
-            -HeaderLeftPadding $HeaderLeftPadding `
             -HeaderSymbol $HeaderSymbol `
             -HeaderWidth $HeaderWidth
     }
