@@ -147,7 +147,7 @@ function Read-Menu {
         if (
             ($maxVisibleOptions -lt $combinedOptionsHeight)
         ) {
-            Write-Host "  --- $($currentIndex + 1) / $combinedOptionsHeight ---".PadRight($HeaderWidth) -ForegroundColor DarkGray
+            Write-Host "  -- $($currentIndex + 1) / $combinedOptionsHeight --".PadRight($HeaderWidth) -ForegroundColor DarkGray
         }
 
 
