@@ -76,6 +76,8 @@ function Read-Menu {
 
         [object]$ExitOption,
 
+        [int]$MaxOptions = 6,
+
         [string]$Header,
 
         [System.Nullable[char]]$HeaderSymbol = '=',
@@ -117,23 +119,28 @@ function Read-Menu {
     }
 
     $currentIndex = 0
+    $optionsOffset = 0
+    $maxVisibleOptions = [Math]::Min($combinedOptionsHeight, $MaxOptions)
     $startingRow = [System.Console]::CursorTop
 
     [System.Console]::CursorVisible = $False
 
     while ($true) {
-        for ($i = 0; $i -lt $combinedOptionsHeight; $i++) {
+        for ($i = $optionsOffset; $i -lt ($maxVisibleOptions + $optionsOffset); $i++) {
             $option = $combinedOptions[$i]
 
-            $optionText = $option.Name ?? $option 
+            $optionText = $option.Name ?? $option
             $optionIcon = "$($option.Icon ?? $null)"
 
             $lineColor = ($i -eq $currentIndex) ? $Color : 'Gray'
             $prefix = ($i -eq $currentIndex) ? '> ' : '  '
 
             $line = $prefix + $optionIcon + $optionText
+            $line = $line.PadRight($consoleWidth)
 
             Write-Host $line -ForegroundColor $lineColor
+
+            Set-Content -Path "./menu-debug" -Value "currentIndex = $currentIndex, optionsOffset = $optionsOffset" -Force | Out-Null
         }
 
         $keyInfo = $null
@@ -151,7 +158,14 @@ function Read-Menu {
                 $currentIndex = [Math]::Max(0, $currentIndex - 1)
             }
             { $_ -in "DownArrow", "J" } {
-                $currentIndex = [Math]::Min($combinedOptionsHeight - 1, $currentIndex + 1)
+                if (($currentIndex -eq $maxVisibleOptions + $optionsOffset - 2) -and ($currentIndex -lt $combinedOptionsHeight - $maxVisibleOptions)) {
+                    $optionsOffset++
+                }
+
+                if ($currentIndex -lt $combinedOptionsHeight - $maxVisibleOptions) {
+                    $currentIndex = [Math]::Min($combinedOptionsHeight - 1, $currentIndex + 1)
+                }
+
             }
             { $_ -in "Enter", "L" } {
                 Clear-Menu -Height $totalMenuHeight
@@ -168,7 +182,7 @@ function Read-Menu {
         }
 
         # This is to correct for when the terminal scrolls after rendering the menu.
-        $startingRow = [System.Console]::CursorTop - $combinedOptionsHeight
+        $startingRow = [System.Console]::CursorTop - $maxVisibleOptions
         [System.Console]::SetCursorPosition(0, $startingRow)
     }
 }
