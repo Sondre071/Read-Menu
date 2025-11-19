@@ -76,7 +76,7 @@ function Read-Menu {
 
         [object]$ExitOption,
 
-        [int]$MaxOptions = 10,
+        [int]$MaxOptions = 16,
 
         [string]$Header,
 
@@ -120,6 +120,7 @@ function Read-Menu {
 
     $currentIndex = 0
     $optionsOffset = 0
+    $displayIndex = $maxVisibleOptions -lt $combinedOptionsHeight
     $startingRow = [System.Console]::CursorTop
 
     [System.Console]::CursorVisible = $False
@@ -141,13 +142,18 @@ function Read-Menu {
             $line = ($prefix + $optionIcon + $optionText).PadRight($HeaderWidth)
 
             Write-Host $line -ForegroundColor $lineColor
-
-            #Set-Content -Path "./menu-debug" -Value "currentIndex = $currentIndex, optionsOffset = $optionsOffset" -Force | Out-Null
         }
+
+        if (
+            ($maxVisibleOptions -lt $combinedOptionsHeight)
+        ) {
+            Write-Host "  --- $($currentIndex + 1) / $combinedOptionsHeight ---".PadRight($HeaderWidth) -ForegroundColor DarkGray
+        }
+
+
 
         $keyInfo = $null
 
-        # ReadKey is nested in a loop to enable script termination through SIGINT, AKA CTRL+C.
         while ($true) {
             if ([Console]::KeyAvailable) {
                 $keyInfo = [Console]::ReadKey($true)
@@ -196,6 +202,7 @@ function Read-Menu {
 
         # This is to correct for when the terminal scrolls after rendering the menu.
         $startingRow = [System.Console]::CursorTop - $maxVisibleOptions
+        if ($displayIndex) { $startingRow-- }
     }
 }
 
