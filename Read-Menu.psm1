@@ -99,38 +99,31 @@ function Read-Menu {
 
     $maxVisibleOptions = [Math]::Min($optionsCount, $MaxOptions)
 
+    $cursorBeforePrinting = [System.Console]::CursorTop
 
-
-    $hasHeader = -not [string]::IsNullOrWhiteSpace($Header)
-    $hasSubheaders = $Subheaders -and $Subheaders.Count -gt 0
-
-    $headerRowCount = 0
-    if ($hasHeader) { $headerRowCount++ }
-    if ($hasSubheaders) { $headerRowCount += $Subheaders.Count }
-
-    #$cursorStart = [Systeml.Console]::CursorTop
-
-    if ($hasHeader) {
+    if ('' -ne $Header) {
         Write-MenuHeader `
             -Header $Header `
             -HeaderWidth $HeaderWidth `
             -HeaderSymbol $HeaderSymbol
     }
 
-    if ($hasSubheaders) {
+    if ($null -ne $Subheaders -and $Subheader.Count -gt 0) {
         $Subheaders | ForEach-Object {
             Write-Host $_ -ForegroundColor $Color
         }
     }
 
-    $totalMenuHeight = $headerRowCount + $maxVisibleOptions
+    $totalMenuHeight = $maxVisibleOptions + (
+        [System.Console]::CursorTop - $cursorBeforePrinting
+    )
 
+    $startingRow = [System.Console]::CursorTop
+    $showIndex = $maxVisibleOptions -lt $optionsCount
     $currentIndex = 0
     $optionsOffset = 0
-    $displayIndex = $maxVisibleOptions -lt $optionsCount
-    $startingRow = [System.Console]::CursorTop
 
-    if ($true -eq $displayIndex) { $totalMenuHeight++ }
+    if ($showIndex) { $totalMenuHeight++ }
 
     [System.Console]::CursorVisible = $False
 
@@ -209,9 +202,9 @@ function Read-Menu {
             }
         }
 
-        # This is to correct for when the terminal scrolls after rendering the menu.
+        # This is to correct when the terminal scrolls after rendering the menu.
         $startingRow = [System.Console]::CursorTop - $maxVisibleOptions
-        if ($displayIndex) { $startingRow-- }
+        if ($showIndex) { $startingRow-- }
     }
 }
 
