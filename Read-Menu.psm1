@@ -133,6 +133,8 @@ function Read-Menu {
         for ($i = 0; $i -lt $maxVisibleOptions; $i++) {
             $index = $optionsOffset + $i
 
+            $consoleWidth = (Get-Host).UI.RawUI.WindowSize.Width 
+
             $option = $combinedOptions[$index]
             $optionText = $option.Name ?? $option
             $optionIcon = "$($option.Icon ?? $null)"
@@ -141,7 +143,7 @@ function Read-Menu {
             $lineColor = $isCurrent ? $Color : 'Gray'
             $prefix = $isCurrent ? '> ' : '  '
 
-            $line = ($prefix + $optionIcon + $optionText).PadRight($HeaderWidth)
+            $line = ($prefix + $optionIcon + $optionText).PadRight($consoleWidth)
 
             Write-Host $line -ForegroundColor $lineColor
         }
@@ -149,7 +151,7 @@ function Read-Menu {
         if (
             ($maxVisibleOptions -lt $combinedOptionsHeight)
         ) {
-            Write-Host "  -- $($currentIndex + 1) / $combinedOptionsHeight --".PadRight($HeaderWidth) -ForegroundColor DarkGray
+            Write-Host "  -- $($currentIndex + 1) / $combinedOptionsHeight --".PadRight($consoleWidth) -ForegroundColor DarkGray
         }
 
 
