@@ -1,3 +1,7 @@
+$ProjectRoot = $PSScriptRoot
+
+. (Join-Path $ProjectRoot 'Helpers' 'Get-MenuOptions.ps1')
+
 function Write-MenuHeader() {
     param (
         [Parameter(Mandatory)]
@@ -89,10 +93,11 @@ function Read-Menu {
         [string]$Color = 'Yellow'
     )
 
-    $combinedOptions = @()
-
-    if ($Options) { $CombinedOptions += $Options }
-    if ($ExitOption) { $CombinedOptions += $ExitOption }
+    $options = Get-MenuOptions `
+        -Options $Options `
+        -ExitOption $ExitOption
+    
+    $optionsCount = $options.Length
 
     $hasHeader = -not [string]::IsNullOrWhiteSpace($Header)
     $hasSubheaders = $Subheaders -and $Subheaders.Count -gt 0
@@ -101,8 +106,7 @@ function Read-Menu {
     if ($hasHeader) { $headerRowCount++ }
     if ($hasSubheaders) { $headerRowCount += $Subheaders.Count }
 
-    $combinedOptionsHeight = $combinedOptions.Count
-    $maxVisibleOptions = [Math]::Min($combinedOptionsHeight, $MaxOptions)
+    $maxVisibleOptions = [Math]::Min($optionsCount, $MaxOptions)
     $totalMenuHeight = $headerRowCount + $maxVisibleOptions
 
     if ($hasHeader) {
@@ -120,7 +124,7 @@ function Read-Menu {
 
     $currentIndex = 0
     $optionsOffset = 0
-    $displayIndex = $maxVisibleOptions -lt $combinedOptionsHeight
+    $displayIndex = $maxVisibleOptions -lt $optionsCount
     $startingRow = [System.Console]::CursorTop
 
     if ($true -eq $displayIndex) { $totalMenuHeight++ }
@@ -135,7 +139,7 @@ function Read-Menu {
 
             $consoleWidth = (Get-Host).UI.RawUI.WindowSize.Width 
 
-            $option = $combinedOptions[$index]
+            $option = $options[$index]
             $optionText = $option.Name ?? $option
             $optionIcon = "$($option.Icon ?? $null)"
 
@@ -149,12 +153,10 @@ function Read-Menu {
         }
 
         if (
-            ($maxVisibleOptions -lt $combinedOptionsHeight)
+            ($maxVisibleOptions -lt $optionsCount)
         ) {
-            Write-Host "  -- $($currentIndex + 1) / $combinedOptionsHeight --".PadRight($consoleWidth) -ForegroundColor DarkGray
+            Write-Host "  -- $($currentIndex + 1) / $optionsCount --".PadRight($consoleWidth) -ForegroundColor DarkGray
         }
-
-
 
         $keyInfo = $null
 
@@ -177,14 +179,14 @@ function Read-Menu {
                 }
             }
             { $_ -in "DownArrow", "J" } {
-                if ($currentIndex -lt $combinedOptionsHeight - 1) {
+                if ($currentIndex -lt $optionsCount - 1) {
                     $currentIndex++
 
                     $scrollBottomIndex = $optionsOffset + $maxVisibleOptions - 2
                     if ($currentIndex -ge $scrollBottomIndex) {
                         $optionsOffset = $currentIndex - ($maxVisibleOptions - 2)
 
-                        $maxOffset = [Math]::Max($combinedOptionsHeight - $maxVisibleOptions, 0)
+                        $maxOffset = [Math]::Max($optionsCount - $maxVisibleOptions, 0)
                         if ($optionsOffset -gt $maxOffset) { $optionsOffset = $maxOffset }
                         if ($optionsOffset -lt 0) { $optionsOffset = 0 }
                     }
@@ -194,7 +196,7 @@ function Read-Menu {
                 Clear-Menu -Height $totalMenuHeight
 
                 [System.Console]::CursorVisible = $true
-                return $combinedOptions[$currentIndex]
+                return $options[$currentIndex]
             }
             { ($_ -in ("Escape", "Q", "H")) -and $ExitOption } {
                 Clear-Menu -Height $totalMenuHeight
