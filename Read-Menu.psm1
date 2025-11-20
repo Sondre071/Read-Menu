@@ -103,7 +103,7 @@ function Read-Menu {
 
     $combinedOptionsHeight = $combinedOptions.Count
     $maxVisibleOptions = [Math]::Min($combinedOptionsHeight, $MaxOptions)
-    $totalMenuHeight = $headerRowCount + $maxVisibleOptions 
+    $totalMenuHeight = $headerRowCount + $maxVisibleOptions
 
     if ($hasHeader) {
         Write-MenuHeader `
@@ -122,6 +122,8 @@ function Read-Menu {
     $optionsOffset = 0
     $displayIndex = $maxVisibleOptions -lt $combinedOptionsHeight
     $startingRow = [System.Console]::CursorTop
+
+    if ($true -eq $displayIndex) { $totalMenuHeight++ }
 
     [System.Console]::CursorVisible = $False
 
