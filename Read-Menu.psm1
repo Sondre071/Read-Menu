@@ -1,6 +1,7 @@
 $ProjectRoot = $PSScriptRoot
 
 . (Join-Path $ProjectRoot 'Helpers' 'Get-Options.ps1')
+. (Join-Path $ProjectRoot 'Helpers' 'Write-Options.ps1')
 
 function Write-MenuHeader() {
     param (
@@ -99,7 +100,7 @@ function Read-Menu {
 
     $maxVisibleOptions = [Math]::Min($optionsCount, $MaxOptions)
 
-    # Used to calculate total menu height prior to looping.
+    # Used to calculate the total height of the menu.
     $cursorBeforePrinting = [System.Console]::CursorTop
 
     if ('' -ne $Header) {
@@ -122,7 +123,7 @@ function Read-Menu {
     $startingRow = [System.Console]::CursorTop
     $showIndex = $maxVisibleOptions -lt $optionsCount
     $currentIndex = 0
-    $optionsOffset = 0
+    $offset = 0
 
     if ($showIndex) { $menuHeight++ }
 
@@ -131,29 +132,13 @@ function Read-Menu {
     while ($true) {
         [System.Console]::SetCursorPosition(0, $startingRow)
 
-        for ($i = 0; $i -lt $maxVisibleOptions; $i++) {
-            $index = $optionsOffset + $i
-
-            $consoleWidth = (Get-Host).UI.RawUI.WindowSize.Width 
-
-            $option = $options[$index]
-            $optionText = $option.Name ?? $option
-            $optionIcon = "$($option.Icon ?? $null)"
-
-            $isCurrent = $($index -eq $currentIndex)
-            $lineColor = $isCurrent ? $Color : 'Gray'
-            $prefix = $isCurrent ? '> ' : '  '
-
-            $line = ($prefix + $optionIcon + $optionText).PadRight($consoleWidth)
-
-            Write-Host $line -ForegroundColor $lineColor
-        }
-
-        if (
-            ($maxVisibleOptions -lt $optionsCount)
-        ) {
-            Write-Host "  -- $($currentIndex + 1) / $optionsCount --".PadRight($consoleWidth) -ForegroundColor DarkGray
-        }
+        Write-Options `
+            -Options $options `
+            -CurrentIndex $currentIndex `
+            -Offset $offset `
+            -ListHeight $maxVisibleOptions `
+            -SelectedColor $Color `
+            -DefaultColor 'Gray'
 
         $keyInfo = $null
 
@@ -169,9 +154,9 @@ function Read-Menu {
                 if ($currentIndex -gt 0) {
                     $currentIndex--
 
-                    $scrollTopIndex = $optionsOffset + 1
+                    $scrollTopIndex = $offset + 1
                     if ($currentIndex -lt $scrollTopIndex) {
-                        $optionsOffset = [Math]::Max($currentIndex - 1, 0)
+                        $offset = [Math]::Max($currentIndex - 1, 0)
                     }
                 }
             }
@@ -179,13 +164,13 @@ function Read-Menu {
                 if ($currentIndex -lt $optionsCount - 1) {
                     $currentIndex++
 
-                    $scrollBottomIndex = $optionsOffset + $maxVisibleOptions - 2
+                    $scrollBottomIndex = $offset + $maxVisibleOptions - 2
                     if ($currentIndex -ge $scrollBottomIndex) {
-                        $optionsOffset = $currentIndex - ($maxVisibleOptions - 2)
+                        $offset = $currentIndex - ($maxVisibleOptions - 2)
 
                         $maxOffset = [Math]::Max($optionsCount - $maxVisibleOptions, 0)
-                        if ($optionsOffset -gt $maxOffset) { $optionsOffset = $maxOffset }
-                        if ($optionsOffset -lt 0) { $optionsOffset = 0 }
+                        if ($offset -gt $maxOffset) { $offset = $maxOffset }
+                        if ($offset -lt 0) { $offset = 0 }
                     }
                 }
             }
