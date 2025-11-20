@@ -99,6 +99,7 @@ function Read-Menu {
 
     $maxVisibleOptions = [Math]::Min($optionsCount, $MaxOptions)
 
+    # Used to calculate total menu height prior to looping.
     $cursorBeforePrinting = [System.Console]::CursorTop
 
     if ('' -ne $Header) {
@@ -114,7 +115,7 @@ function Read-Menu {
         }
     }
 
-    $totalMenuHeight = $maxVisibleOptions + (
+    $menuHeight = $maxVisibleOptions + (
         [System.Console]::CursorTop - $cursorBeforePrinting
     )
 
@@ -123,7 +124,7 @@ function Read-Menu {
     $currentIndex = 0
     $optionsOffset = 0
 
-    if ($showIndex) { $totalMenuHeight++ }
+    if ($showIndex) { $menuHeight++ }
 
     [System.Console]::CursorVisible = $False
 
@@ -189,13 +190,13 @@ function Read-Menu {
                 }
             }
             { $_ -in "Enter", "L" } {
-                Clear-Menu -Height $totalMenuHeight
+                Clear-Menu -Height $menuHeight
 
                 [System.Console]::CursorVisible = $true
                 return $options[$currentIndex]
             }
             { ($_ -in ("Escape", "Q", "H")) -and $ExitOption } {
-                Clear-Menu -Height $totalMenuHeight
+                Clear-Menu -Height $menuHeight
 
                 [System.Console]::CursorVisible = $true
                 return $ExitOption
@@ -240,9 +241,9 @@ function Read-Input() {
     $userInput = Read-Host $Instruction
 
     $currentRow = [System.Console]::CursorTop
-    $totalMenuHeight = $currentRow - $startingRow
+    $menuHeight = $currentRow - $startingRow
 
-    Clear-Menu -Height $TotalMenuHeight
+    Clear-Menu -Height $menuHeight
 
     return $userInput
 }
