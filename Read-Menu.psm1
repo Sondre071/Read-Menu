@@ -1,6 +1,6 @@
 $ProjectRoot = $PSScriptRoot
 
-. (Join-Path $ProjectRoot 'Helpers' 'Get-MenuOptions.ps1')
+. (Join-Path $ProjectRoot 'Helpers' 'Get-Options.ps1')
 
 function Write-MenuHeader() {
     param (
@@ -93,11 +93,13 @@ function Read-Menu {
         [string]$Color = 'Yellow'
     )
 
-    $options = Get-MenuOptions `
+    $options, $optionsCount = Get-Options `
         -Options $Options `
         -ExitOption $ExitOption
-    
-    $optionsCount = $options.Length
+
+    $maxVisibleOptions = [Math]::Min($optionsCount, $MaxOptions)
+
+
 
     $hasHeader = -not [string]::IsNullOrWhiteSpace($Header)
     $hasSubheaders = $Subheaders -and $Subheaders.Count -gt 0
@@ -106,8 +108,7 @@ function Read-Menu {
     if ($hasHeader) { $headerRowCount++ }
     if ($hasSubheaders) { $headerRowCount += $Subheaders.Count }
 
-    $maxVisibleOptions = [Math]::Min($optionsCount, $MaxOptions)
-    $totalMenuHeight = $headerRowCount + $maxVisibleOptions
+    #$cursorStart = [Systeml.Console]::CursorTop
 
     if ($hasHeader) {
         Write-MenuHeader `
@@ -121,6 +122,8 @@ function Read-Menu {
             Write-Host $_ -ForegroundColor $Color
         }
     }
+
+    $totalMenuHeight = $headerRowCount + $maxVisibleOptions
 
     $currentIndex = 0
     $optionsOffset = 0
