@@ -2,6 +2,7 @@ $ProjectRoot = $PSScriptRoot
 
 . (Join-Path $ProjectRoot 'Helpers' 'Get-Options.ps1')
 . (Join-Path $ProjectRoot 'Helpers' 'Write-Options.ps1')
+. (Join-Path $ProjectRoot 'Helpers' 'Read-KeyInput.ps1')
 
 function Write-MenuHeader() {
     param (
@@ -149,43 +150,19 @@ function Read-Menu {
             }
         }
 
-        switch ($keyInfo.Key) {
-            { $_ -in "UpArrow", "K" } {
-                if ($currentIndex -gt 0) {
-                    $currentIndex--
+        $currentIndex, $offset, $result = Read-KeyInput `
+            -Key $keyInfo.Key `
+            -Options $options `
+            -ExitOption $ExitOption `
+            -CurrentIndex $currentIndex `
+            -Offset $offset `
+            -ListHeight $maxVisibleOptions
+        
+        if ($null -ne $result) {
+            Clear-Menu -Height $menuHeight
+            [System.Console]::CursorVisible = $true
 
-                    $scrollTopIndex = $offset + 1
-                    if ($currentIndex -lt $scrollTopIndex) {
-                        $offset = [Math]::Max($currentIndex - 1, 0)
-                    }
-                }
-            }
-            { $_ -in "DownArrow", "J" } {
-                if ($currentIndex -lt $optionsCount - 1) {
-                    $currentIndex++
-
-                    $scrollBottomIndex = $offset + $maxVisibleOptions - 2
-                    if ($currentIndex -ge $scrollBottomIndex) {
-                        $offset = $currentIndex - ($maxVisibleOptions - 2)
-
-                        $maxOffset = [Math]::Max($optionsCount - $maxVisibleOptions, 0)
-                        if ($offset -gt $maxOffset) { $offset = $maxOffset }
-                        if ($offset -lt 0) { $offset = 0 }
-                    }
-                }
-            }
-            { $_ -in "Enter", "L" } {
-                Clear-Menu -Height $menuHeight
-
-                [System.Console]::CursorVisible = $true
-                return $options[$currentIndex]
-            }
-            { ($_ -in ("Escape", "Q", "H")) -and $ExitOption } {
-                Clear-Menu -Height $menuHeight
-
-                [System.Console]::CursorVisible = $true
-                return $ExitOption
-            }
+            return $result
         }
 
         # This is to correct when the terminal scrolls after rendering the menu.
