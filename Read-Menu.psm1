@@ -1,8 +1,7 @@
-$ProjectRoot = $PSScriptRoot
-
-. (Join-Path $ProjectRoot 'Helpers' 'Get-Options.ps1')
-. (Join-Path $ProjectRoot 'Helpers' 'Write-Options.ps1')
-. (Join-Path $ProjectRoot 'Helpers' 'Read-KeyInput.ps1')
+. (Join-Path $PSScriptRoot 'Helpers' 'Get-Options.ps1')
+. (Join-Path $PSScriptRoot 'Helpers' 'Write-Options.ps1')
+. (Join-Path $PSScriptRoot 'Helpers' 'Read-KeyInput.ps1')
+. (Join-Path $PSScriptRoot 'Helpers' 'Clear-Menu.ps1')
 
 function Write-MenuHeader() {
     param (
@@ -10,11 +9,8 @@ function Write-MenuHeader() {
         [string]$Header,
 
         [System.Nullable[int]]$HeaderWidth = 40,
-
         [System.Nullable[char]]$HeaderSymbol = '=',
-
         [string[]]$Subheaders,
-
         [string]$Color = 'Yellow'
     )
 
@@ -30,10 +26,9 @@ function Write-MenuHeader() {
         }
     }
 
-    if (
-        ($null -eq $maxLen)
-    ) {
+    if ($null -eq $maxLen) {
         Write-Host $line -ForegroundColor $Color
+
         return
     }
 
@@ -68,30 +63,17 @@ function Write-MenuHeader() {
 
 }
 
-function Clear-Menu([int]$Height) {
-
-    # Jump $Height lines up and clear everything below.
-    Write-Host "`e[$($Height)A" -NoNewLine
-    Write-Host "`e[0J" -NoNewLine
-}
-
 function Read-Menu {
     param (
         [Parameter(Mandatory)]
         [object[]]$Options,
 
         [object]$ExitOption,
-
         [int]$MaxOptions = 16,
-
         [string]$Header,
-
         [System.Nullable[char]]$HeaderSymbol = '=',
-
         [System.Nullable[int]]$HeaderWidth = 40,
-
         [string[]]$Subheaders,
-
         [string]$Color = 'Yellow'
     )
 
@@ -174,15 +156,10 @@ function Read-Menu {
 function Read-Input() {
     param (
         [string]$Header,
-
         [char]$HeaderSymbol = '=',
-
         [int]$HeaderWidth = 40,
-
         [string[]]$Subheaders,
-
         [string]$Instruction = 'You',
-
         [string]$Color = 'Yellow'
     )
 
