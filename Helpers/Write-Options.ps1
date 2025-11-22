@@ -31,6 +31,6 @@ function Write-Options {
     ) {
         $line = ("  -- {0} / {1} --" -f ($CurrentIndex + 1), $Options.Count).PadRight($consoleWidth)
 
-        Write-Host $line
+        Write-Host $line -ForegroundColor 'DarkGray'
     }
 }
