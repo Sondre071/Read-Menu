@@ -16,7 +16,7 @@ function Write-MenuHeader() {
 
     $lineLen = & {
         if ($null -eq $HeaderWidth) {
-            return (Get-Host).UI.RawUI.WindowSize.Width 
+            return (Get-Host).UI.RawUI.WindowSize.Width - 2
         }
         elseif ($null -eq $HeaderSymbol) {
             return $HeaderWidth
@@ -36,10 +36,10 @@ function Write-MenuHeader() {
             return $Header
         }
         else {
-            $padLen = [Math]::Floor(($lineLen - $Header.Length) / 2)
-            $pad = "$HeaderSymbol" * $padLen
+            $padLeft = "$HeaderSymbol" * [Math]::Floor(($lineLen - $Header.Length) / 2)
+            $padRight = "$HeaderSymbol" * ($lineLen - $Header.Length - $padLeft.Length)
 
-            return "{0} {1} {0}" -f $pad, $Header
+            return "{0} {1} {2}" -f $padLeft, $Header, $padRight
         }
     }
 
@@ -95,7 +95,7 @@ function Read-Menu {
         [System.Console]::CursorTop - $cursorBeforePrinting
     )
 
-    $startingRow = [System.Console]::CursorTop
+    $startRow = [System.Console]::CursorTop
     $showIndex = $maxVisibleOptions -lt $optionsCount
     $currentIndex = 0
     $offset = 0
@@ -105,7 +105,7 @@ function Read-Menu {
     [System.Console]::CursorVisible = $False
 
     while ($true) {
-        [System.Console]::SetCursorPosition(0, $startingRow)
+        [System.Console]::SetCursorPosition(0, $startRow)
 
         Write-Options `
             -Options $options `
@@ -140,8 +140,8 @@ function Read-Menu {
         }
 
         # This is to correct when the terminal scrolls after rendering the menu.
-        $startingRow = [System.Console]::CursorTop - $maxVisibleOptions
-        if ($showIndex) { $startingRow-- }
+        $startRow = [System.Console]::CursorTop - $maxVisibleOptions
+        if ($showIndex) { $startRow-- }
     }
 }
 
@@ -155,7 +155,7 @@ function Read-Input() {
         [string]$Color = 'Yellow'
     )
 
-    $startingRow = [System.Console]::CursorTop
+    $startRow = [System.Console]::CursorTop
 
     if ($Header) {
         Write-MenuHeader `
@@ -172,7 +172,7 @@ function Read-Input() {
     $userInput = Read-Host $Instruction
 
     $currentRow = [System.Console]::CursorTop
-    $menuHeight = $currentRow - $startingRow
+    $menuHeight = $currentRow - $startRow
 
     Clear-Menu -Height $menuHeight
 
