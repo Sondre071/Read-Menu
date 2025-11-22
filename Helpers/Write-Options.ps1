@@ -15,13 +15,13 @@ function Write-Options {
 
         $option = $Options[$index]
         $optionText = $option.Name ?? $option
-        $optionIcon = "$($option.Icon ?? $null)"
+        $optionIcon = $option.Icon ?? ''
 
-        $isSelected = $($index -eq $CurrentIndex)
+        $isSelected = $index -eq $CurrentIndex
         $lineColor = $isSelected ? $SelectedColor : $DefaultColor
-        $prefix = $isSelected ? '> ' : '  '
+        $prefix = $isSelected ? '>' : ' '
 
-        $line = ($prefix + $optionIcon + $optionText).PadRight($consoleWidth)
+        $line = ("{0} {1}{2}" -f $prefix, $optionIcon, $optionText).PadRight($consoleWidth)
 
         Write-Host $line -ForegroundColor $lineColor
     }
@@ -29,7 +29,8 @@ function Write-Options {
     if (
         ($ListHeight -lt $Options.Count)
     ) {
-        Write-Host "  -- $($CurrentIndex + 1) / $($Options.Count) --".PadRight($consoleWidth) -ForegroundColor DarkGray
-    }
+        $line = ("  -- {0} / {1} --" -f ($CurrentIndex + 1), $Options.Count).PadRight($consoleWidth)
 
+        Write-Host $line
+    }
 }
