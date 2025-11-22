@@ -59,3 +59,4 @@ switch($action) {
   }
 }
 ```
+<img width="475" height="328" alt="PowerShell 7 (x64) 22 11 2025 15_36_05" src="https://github.com/user-attachments/assets/00a66c7b-b8a1-4bd7-a53b-51ecf49e6c04" />
