@@ -13,38 +13,49 @@
 
 ### Parameters
 
-The only parameter requirement is that at least one option is passed in somehow. The rest is optional.
+The only requirement is that at least one option is passed in. The rest is optional.
+Options can be one of two things. Anything able to be printed, or an object with a ".Name"-accessible property.
 
 - Options: An array of options.
-- ExitOption: A string to be placed at the end, and returned when exiting the menu using `esc`, `q` or `h`.
+- ExitOption: An option placed at the end, and returned when exiting the menu using `esc`, `q` or `h`.
 - Header: A string to render the title of the menu screen.
 - HeaderWidth: The number of columns the menu title will be added to.
-  - Defauls to 40.
-- Subheaders: An array to render beneath the menu header.
-- MenuTextColor: The foreground color of the selected index, and the title.
+  - Defaults to 40.
+- Subheaders: An array of strings to render beneath the menu header.
+  - An empty string at the end can be used for padding.
+- Color: The foreground color of the selected index, header, and subheaders.
   - Defaults to yellow.
 
 ## Example
-```console
-$options = ('Pull', 'Fetch all', 'Commit', 'Add new command')
 
-$action = Read-Menu -Header 'Select action' -Options $options -ExitOption 'Exit'
+```powershell
+$options = ('Pull', 'Push', 'Fetch all', 'Commit')
+
+$action = Read-Menu `
+    -Header 'Select action' `
+    -Subheaders ('Pull is set to ff-only.', '') `
+    -Options $options `
+    -ExitOption 'Exit'
 
 switch($action) {
-  case 'Pull':
+  'Pull': {
     ...
+  }
 
-  case 'Fetch all':
+  'Push': {
     ...
+  }
 
-  case 'Commit':
+  'Fetch all': {
     ...
+  }
 
-  case 'Add new command':
+  'Commit' {
     ...
+  }
 
-  case 'Exit':
+  'Exit': {
     return
+  }
 }
 ```
-![image](https://github.com/user-attachments/assets/7731cb6d-accf-46b5-970a-5a276b89cc37)

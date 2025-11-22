@@ -85,7 +85,7 @@ function Read-Menu {
             -HeaderSymbol $HeaderSymbol
     }
 
-    if ($null -ne $Subheaders -and $Subheader.Count -gt 0) {
+    if ($null -ne $Subheaders -and $Subheaders.Count -gt 0) {
         $Subheaders | ForEach-Object {
             Write-Host $_ -ForegroundColor $Color
         }
