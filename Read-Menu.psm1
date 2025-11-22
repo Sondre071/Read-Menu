@@ -14,26 +14,21 @@ function Write-MenuHeader() {
         [string]$Color = 'Yellow'
     )
 
-    $maxLen = & {
+    $lineLen = & {
         if ($null -eq $HeaderWidth) {
-            return $null
+            return (Get-Host).UI.RawUI.WindowSize.Width 
         }
         elseif ($null -eq $HeaderSymbol) {
             return $HeaderWidth
         }
         else {
-            return $HeaderWidth - 4
+            # Four to allow space for the symbol, two for padding around the text.
+            return $HeaderWidth - 6
         }
     }
 
-    if ($null -eq $maxLen) {
-        Write-Host $line -ForegroundColor $Color
-
-        return
-    }
-
-    if ($Header.Length -gt $maxLen) {
-        $Header = $Header.Substring(0, $maxLen - 2) + '..'
+    if ($Header.Length -gt $lineLen) {
+        $Header = $Header.Substring(0, $lineLen - 2) + '..'
     }
 
     $line = & {
@@ -41,13 +36,10 @@ function Write-MenuHeader() {
             return $Header
         }
         else {
-            $inner = " $Header "
-            $pad = $HeaderWidth - $inner.Length
+            $padLen = [Math]::Floor(($lineLen - $Header.Length) / 2)
+            $pad = "$HeaderSymbol" * $padLen
 
-            $left = [Math]::Floor($pad / 2)
-            $right = $pad - $left
-
-            return ("$HeaderSymbol" * $left) + $inner + ("$HeaderSymbol" * $right)
+            return "{0} {1} {0}" -f $pad, $Header, $pad
         }
     }
 
