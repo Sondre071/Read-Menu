@@ -1,4 +1,5 @@
 function Write-Options {
+    [OutputType([void])]
     param (
         [object[]]$Options,
         [int]$CurrentIndex,

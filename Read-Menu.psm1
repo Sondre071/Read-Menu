@@ -69,14 +69,14 @@ function Read-Menu {
         [string]$Color = 'Yellow'
     )
 
-    $options, $optionsCount = Get-Options `
+    $options = Get-Options `
         -Options $Options `
         -ExitOption $ExitOption
 
-    $maxVisibleOptions = [Math]::Min($optionsCount, $MaxOptions)
+    $maxVisibleOptions = [Math]::Min($options.Count, $MaxOptions)
 
     # Used to calculate the total height of the menu.
-    $cursorBeforePrinting = [System.Console]::CursorTop
+    $cursorBeforePrint = [System.Console]::CursorTop
 
     if ('' -ne $Header) {
         Write-MenuHeader `
@@ -85,18 +85,18 @@ function Read-Menu {
             -HeaderSymbol $HeaderSymbol
     }
 
-    if ($null -ne $Subheaders -and $Subheaders.Count -gt 0) {
+    if ($Subheaders.Count -gt 0) {
         $Subheaders | ForEach-Object {
             Write-Host $_ -ForegroundColor $Color
         }
     }
 
     $menuHeight = $maxVisibleOptions + (
-        [System.Console]::CursorTop - $cursorBeforePrinting
+        [System.Console]::CursorTop - $cursorBeforePrint
     )
 
     $startRow = [System.Console]::CursorTop
-    $showIndex = $maxVisibleOptions -lt $optionsCount
+    $showIndex = $maxVisibleOptions -lt $options.Count
     $currentIndex = 0
     $offset = 0
 
@@ -148,10 +148,10 @@ function Read-Menu {
 function Read-Input() {
     param (
         [string]$Header,
-        [char]$HeaderSymbol = '=',
-        [int]$HeaderWidth = 40,
-        [string[]]$Subheaders,
         [string]$Instruction = 'You',
+        [System.Nullable[char]]$HeaderSymbol = '=',
+        [System.Nullable[int]]$HeaderWidth = 40,
+        [string[]]$Subheaders,
         [string]$Color = 'Yellow'
     )
 
@@ -163,7 +163,8 @@ function Read-Input() {
             -HeaderSymbol $HeaderSymbol `
             -HeaderWidth $HeaderWidth
     }
-    if ($Subheaders -gt 0) {
+    
+    if ($Subheaders.Count -gt 0) {
         $Subheaders | ForEach-Object {
             Write-Host $_ -ForegroundColor $Color
         }

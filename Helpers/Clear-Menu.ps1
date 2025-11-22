@@ -1,4 +1,5 @@
 function Clear-Menu {
+    [OutputType([void])]
     param (
         [Parameter(Mandatory)]
         [int]$Height

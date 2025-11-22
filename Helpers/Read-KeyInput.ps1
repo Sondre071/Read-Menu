@@ -1,4 +1,5 @@
 function Read-KeyInput {
+    [OutputType([object[]])]
     param (
         [ConsoleKey]$Key,
         [object[]]$Options,
@@ -22,7 +23,7 @@ function Read-KeyInput {
             }
         }
         { $_ -in "DownArrow", "J" } {
-            if ($CurrentIndex -lt $OptionsCount - 1) {
+            if ($CurrentIndex -lt $Options.Count - 1) {
                 $CurrentIndex++
 
                 $scrollBottomIndex = $Offset + $ListHeight - 2
@@ -38,7 +39,7 @@ function Read-KeyInput {
         { $_ -in "Enter", "L" } {
             $result = $options[$CurrentIndex]
         }
-        { ($_ -in ("Escape", "Q", "H")) -and $ExitOption } {
+        { ($_ -in "Escape", "Q", "H") -and $ExitOption } {
             $result = $ExitOption
         }
     }
