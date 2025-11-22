@@ -39,7 +39,7 @@ function Write-MenuHeader() {
             $padLen = [Math]::Floor(($lineLen - $Header.Length) / 2)
             $pad = "$HeaderSymbol" * $padLen
 
-            return "{0} {1} {0}" -f $pad, $Header, $pad
+            return "{0} {1} {0}" -f $pad, $Header
         }
     }
 
