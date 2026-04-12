@@ -9,7 +9,7 @@ function Write-MenuHeader() {
         [string]$Header,
 
         [System.Nullable[int]]$HeaderWidth = 40,
-        [System.Nullable[char]]$HeaderSymbol = '=',
+        [System.Nullable[char]]$HeaderSymbol = '─',
         [string[]]$Subheaders,
         [string]$Color = 'Yellow'
     )
@@ -63,7 +63,7 @@ function Read-Menu {
         [object]$ExitOption,
         [int]$MaxOptions = 16,
         [string]$Header,
-        [System.Nullable[char]]$HeaderSymbol = '=',
+        [System.Nullable[char]]$HeaderSymbol = '─',
         [System.Nullable[int]]$HeaderWidth = 40,
         [string[]]$Subheaders,
         [string]$Color = 'Yellow'
@@ -149,7 +149,7 @@ function Read-Input() {
     param (
         [string]$Header,
         [string]$Instruction = 'You',
-        [System.Nullable[char]]$HeaderSymbol = '=',
+        [System.Nullable[char]]$HeaderSymbol = '─',
         [System.Nullable[int]]$HeaderWidth = 40,
         [string[]]$Subheaders,
         [string]$Color = 'Yellow'
