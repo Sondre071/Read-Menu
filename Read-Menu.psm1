@@ -3,39 +3,43 @@
 . (Join-Path $PSScriptRoot 'Helpers' 'Read-KeyInput.ps1')
 . (Join-Path $PSScriptRoot 'Helpers' 'Clear-Menu.ps1')
 
-function Write-MenuHeader() {
+function Write-MenuHeader()
+{
     param (
         [Parameter(Mandatory)]
         [string]$Header,
-
-        [System.Nullable[int]]$HeaderWidth = 40,
-        [System.Nullable[char]]$HeaderSymbol = '─',
         [string[]]$Subheaders,
-        [string]$Color = 'Yellow'
+
+        [string]$Color = 'Yellow',
+        [System.Nullable[int]]$HeaderWidth = 40,
+        [System.Nullable[char]]$HeaderSymbol = '─'
     )
 
     $lineLen = & {
-        if ($null -eq $HeaderWidth) {
+        if ($null -eq $HeaderWidth)
+        {
             return (Get-Host).UI.RawUI.WindowSize.Width - 2
-        }
-        elseif ($null -eq $HeaderSymbol) {
+        } elseif ($null -eq $HeaderSymbol)
+        {
             return $HeaderWidth
-        }
-        else {
+        } else
+        {
             # Four to allow space for the symbol, two for padding around the text.
             return $HeaderWidth - 6
         }
     }
 
-    if ($Header.Length -gt $lineLen) {
+    if ($Header.Length -gt $lineLen)
+    {
         $Header = $Header.Substring(0, $lineLen - 2) + '..'
     }
 
     $line = & {
-        if ($null -eq $HeaderSymbol) {
+        if ($null -eq $HeaderSymbol)
+        {
             return $Header
-        }
-        else {
+        } else
+        {
             $padLeft = "$HeaderSymbol" * [Math]::Floor(($lineLen - $Header.Length) / 2)
             $padRight = "$HeaderSymbol" * ($lineLen - $Header.Length - $padLeft.Length)
 
@@ -45,7 +49,8 @@ function Write-MenuHeader() {
 
     Write-Host $line -ForegroundColor $Color
 
-    if ($SubHeaders.Count -gt 0) {
+    if ($SubHeaders.Count -gt 0)
+    {
         $Subheaders | ForEach-Object {
             Write-Host $_ -ForegroundColor $Color
         }
@@ -55,18 +60,19 @@ function Write-MenuHeader() {
 
 }
 
-function Read-Menu {
+function Read-Menu
+{
     param (
+        [string]$Header,
         [Parameter(Mandatory)]
         [object[]]$Options,
-
+        [string[]]$Subheaders,
         [object]$ExitOption,
-        [int]$MaxOptions = 16,
-        [string]$Header,
+
+        [string]$Color = 'Yellow',
         [System.Nullable[char]]$HeaderSymbol = '─',
         [System.Nullable[int]]$HeaderWidth = 40,
-        [string[]]$Subheaders,
-        [string]$Color = 'Yellow'
+        [int]$MaxOptions = 16
     )
 
     $options = Get-Options `
@@ -78,14 +84,16 @@ function Read-Menu {
     # Used to calculate the total height of the menu.
     $cursorBeforePrint = [System.Console]::CursorTop
 
-    if ('' -ne $Header) {
+    if ('' -ne $Header)
+    {
         Write-MenuHeader `
             -Header $Header `
             -HeaderWidth $HeaderWidth `
             -HeaderSymbol $HeaderSymbol
     }
 
-    if ($Subheaders.Count -gt 0) {
+    if ($Subheaders.Count -gt 0)
+    {
         $Subheaders | ForEach-Object {
             Write-Host $_ -ForegroundColor $Color
         }
@@ -100,11 +108,14 @@ function Read-Menu {
     $currentIndex = 0
     $offset = 0
 
-    if ($showIndex) { $menuHeight++ }
+    if ($showIndex)
+    { $menuHeight++
+    }
 
     [System.Console]::CursorVisible = $False
 
-    while ($true) {
+    while ($true)
+    {
         [System.Console]::SetCursorPosition(0, $startRow)
 
         Write-Options `
@@ -117,8 +128,10 @@ function Read-Menu {
 
         $keyInfo = $null
 
-        while ($true) {
-            if ([Console]::KeyAvailable) {
+        while ($true)
+        {
+            if ([Console]::KeyAvailable)
+            {
                 $keyInfo = [Console]::ReadKey($true)
                 break
             }
@@ -131,8 +144,9 @@ function Read-Menu {
             -CurrentIndex $currentIndex `
             -Offset $offset `
             -ListHeight $maxVisibleOptions
-        
-        if ($null -ne $result) {
+
+        if ($null -ne $result)
+        {
             Clear-Menu -Height $menuHeight
             [System.Console]::CursorVisible = $true
 
@@ -141,30 +155,36 @@ function Read-Menu {
 
         # This is to correct when the terminal scrolls after rendering the menu.
         $startRow = [System.Console]::CursorTop - $maxVisibleOptions
-        if ($showIndex) { $startRow-- }
+        if ($showIndex)
+        { $startRow--
+        }
     }
 }
 
-function Read-Input() {
+function Read-Input()
+{
     param (
         [string]$Header,
-        [string]$Instruction = 'You',
-        [System.Nullable[char]]$HeaderSymbol = '─',
-        [System.Nullable[int]]$HeaderWidth = 40,
         [string[]]$Subheaders,
-        [string]$Color = 'Yellow'
+        [string]$Instruction = 'You',
+
+        [string]$Color = 'Yellow',
+        [System.Nullable[char]]$HeaderSymbol = '─',
+        [System.Nullable[int]]$HeaderWidth = 40
     )
 
     $startRow = [System.Console]::CursorTop
 
-    if ($Header) {
+    if ($Header)
+    {
         Write-MenuHeader `
             -Header $Header `
             -HeaderSymbol $HeaderSymbol `
             -HeaderWidth $HeaderWidth
     }
-    
-    if ($Subheaders.Count -gt 0) {
+
+    if ($Subheaders.Count -gt 0)
+    {
         $Subheaders | ForEach-Object {
             Write-Host $_ -ForegroundColor $Color
         }
