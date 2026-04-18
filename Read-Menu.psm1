@@ -135,6 +135,8 @@ function Read-Menu
                 $keyInfo = [Console]::ReadKey($true)
                 break
             }
+            
+            Start-Sleep -Milliseconds 10
         }
 
         $currentIndex, $offset, $result = Read-KeyInput `
