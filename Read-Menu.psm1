@@ -150,7 +150,7 @@ function Read-Menu
             return $result
         }
 
-        # This is to correct when the terminal scrolls after rendering the menu.
+        # This is required to re-align when the terminal scrolls after first render.
         $startRow = [System.Console]::CursorTop - $maxVisibleOptions
         if ($showIndex)
         {
