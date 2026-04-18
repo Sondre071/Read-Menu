@@ -49,13 +49,9 @@ function Write-MenuHeader()
 
     Write-Host $line -ForegroundColor $Color
 
-    if ($SubHeaders.Count -gt 0)
+    foreach ($subheader in $Subheaders)
     {
-        $Subheaders | ForEach-Object {
-            Write-Host $_ -ForegroundColor $Color
-        }
-
-        Write-Host
+        Write-Host $subheader -ForegroundColor $Color
     }
 
 }
@@ -92,11 +88,9 @@ function Read-Menu
             -HeaderSymbol $HeaderSymbol
     }
 
-    if ($Subheaders.Count -gt 0)
+    foreach ($subheader in $Subheaders)
     {
-        $Subheaders | ForEach-Object {
-            Write-Host $_ -ForegroundColor $Color
-        }
+        Write-Host $subheader -ForegroundColor $Color
     }
 
     $menuHeight = $maxVisibleOptions + (
@@ -109,7 +103,8 @@ function Read-Menu
     $offset = 0
 
     if ($showIndex)
-    { $menuHeight++
+    {
+        $menuHeight++
     }
 
     [System.Console]::CursorVisible = $False
@@ -135,7 +130,7 @@ function Read-Menu
                 $keyInfo = [Console]::ReadKey($true)
                 break
             }
-            
+
             Start-Sleep -Milliseconds 10
         }
 
@@ -158,7 +153,8 @@ function Read-Menu
         # This is to correct when the terminal scrolls after rendering the menu.
         $startRow = [System.Console]::CursorTop - $maxVisibleOptions
         if ($showIndex)
-        { $startRow--
+        {
+            $startRow--
         }
     }
 }
@@ -185,11 +181,9 @@ function Read-Input()
             -HeaderWidth $HeaderWidth
     }
 
-    if ($Subheaders.Count -gt 0)
+    foreach ($subheader in $Subheaders)
     {
-        $Subheaders | ForEach-Object {
-            Write-Host $_ -ForegroundColor $Color
-        }
+        Write-Host $subheader -ForegroundColor $Color
     }
 
     $userInput = Read-Host $Instruction
