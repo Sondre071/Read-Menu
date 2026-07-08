@@ -76,9 +76,26 @@ function Read-Menu
         -ExitOption $ExitOption
 
     $maxVisibleOptions = [Math]::Min($options.Count, $MaxOptions)
+    $showIndex = $maxVisibleOptions -lt $options.Count
 
-    # Used to calculate the total height of the menu.
-    $cursorBeforePrint = [System.Console]::CursorTop
+    $headerLines = 0
+    if ('' -ne $Header)
+    {
+        $headerLines++
+    }
+    $headerLines += $Subheaders.Count
+
+    $menuHeight = $headerLines + $maxVisibleOptions
+    if ($showIndex)
+    {
+        $menuHeight++
+    }
+
+    # Reserve the full area instead of scrolling during render.
+    Write-Host ("`n" * $menuHeight) -NoNewline
+    Write-Host "`e[$($menuHeight)A" -NoNewline
+
+    $startRow = [System.Console]::CursorTop
 
     if ('' -ne $Header)
     {
@@ -93,69 +110,51 @@ function Read-Menu
         Write-Host $subheader -ForegroundColor $Color
     }
 
-    $menuHeight = $maxVisibleOptions + (
-        [System.Console]::CursorTop - $cursorBeforePrint
-    )
-
-    $startRow = [System.Console]::CursorTop
-    $showIndex = $maxVisibleOptions -lt $options.Count
+    $optionsRow = $startRow + $headerLines
     $currentIndex = 0
     $offset = 0
 
-    if ($showIndex)
+    [System.Console]::CursorVisible = $false
+
+    try
     {
-        $menuHeight++
-    }
-
-    [System.Console]::CursorVisible = $False
-
-    while ($true)
-    {
-        [System.Console]::SetCursorPosition(0, $startRow)
-
-        Write-Options `
-            -Options $options `
-            -CurrentIndex $currentIndex `
-            -Offset $offset `
-            -ListHeight $maxVisibleOptions `
-            -SelectedColor $Color `
-            -DefaultColor 'Gray'
-
-        $keyInfo = $null
-
         while ($true)
         {
-            if ([Console]::KeyAvailable)
+            [System.Console]::SetCursorPosition(0, $optionsRow)
+
+            Write-Options `
+                -Options $options `
+                -CurrentIndex $currentIndex `
+                -Offset $offset `
+                -ListHeight $maxVisibleOptions `
+                -SelectedColor $Color `
+                -DefaultColor 'Gray'
+
+            while (-not [Console]::KeyAvailable)
             {
-                $keyInfo = [Console]::ReadKey($true)
-                break
+                Start-Sleep -Milliseconds 10
             }
 
-            Start-Sleep -Milliseconds 10
+            $keyInfo = [Console]::ReadKey($true)
+
+            $currentIndex, $offset, $result = Read-KeyInput `
+                -Key $keyInfo.Key `
+                -Options $options `
+                -ExitOption $ExitOption `
+                -CurrentIndex $currentIndex `
+                -Offset $offset `
+                -ListHeight $maxVisibleOptions
+
+            if ($null -ne $result)
+            {
+                Clear-Menu -Height $menuHeight
+
+                return $result
+            }
         }
-
-        $currentIndex, $offset, $result = Read-KeyInput `
-            -Key $keyInfo.Key `
-            -Options $options `
-            -ExitOption $ExitOption `
-            -CurrentIndex $currentIndex `
-            -Offset $offset `
-            -ListHeight $maxVisibleOptions
-
-        if ($null -ne $result)
-        {
-            Clear-Menu -Height $menuHeight
-            [System.Console]::CursorVisible = $true
-
-            return $result
-        }
-
-        # This is required to re-align when the terminal scrolls after first render.
-        $startRow = [System.Console]::CursorTop - $maxVisibleOptions
-        if ($showIndex)
-        {
-            $startRow--
-        }
+    } finally
+    {
+        [System.Console]::CursorVisible = $true
     }
 }
 
