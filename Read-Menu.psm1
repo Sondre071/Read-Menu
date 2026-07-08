@@ -12,7 +12,7 @@ function Write-MenuHeader()
 
         [string]$Color = 'Yellow',
         [System.Nullable[int]]$HeaderWidth = 40,
-        [System.Nullable[char]]$HeaderSymbol = '─'
+        [System.Nullable[char]]$HeaderSymbol = '━'
     )
 
     $lineLen = & {
@@ -66,7 +66,7 @@ function Read-Menu
         [object]$ExitOption,
 
         [string]$Color = 'Yellow',
-        [System.Nullable[char]]$HeaderSymbol = '─',
+        [System.Nullable[char]]$HeaderSymbol = '━',
         [System.Nullable[int]]$HeaderWidth = 40,
         [int]$MaxOptions = 16
     )
