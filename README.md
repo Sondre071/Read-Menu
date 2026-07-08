@@ -31,30 +31,35 @@ Options can be one of two things. Anything able to be printed, or an object with
 ```powershell
 $options = 'Pull', 'Push', 'Fetch all', 'Commit'
 
-$action = Read-Menu `
-    -Header 'Select action' `
+$choice = Read-Menu `
+    -Header 'Select Git action' `
     -Subheaders 'Pull is set to ff-only.', '' `
     -Options $options `
     -ExitOption 'Exit'
 
-switch($action) {
-  'Pull': {
+switch($choice) {
+  'Pull'
+  {
     ...
   }
 
-  'Push': {
+  'Push'
+  {
     ...
   }
 
-  'Fetch all': {
+  'Fetch all'
+  {
     ...
   }
 
-  'Commit' {
+  'Commit'
+  {
     ...
   }
 
-  'Exit': {
+  'Exit'
+  {
     return
   }
 }
