@@ -20,7 +20,7 @@ function Write-Options {
 
         $isSelected = $index -eq $CurrentIndex
         $lineColor = $isSelected ? $SelectedColor : $DefaultColor
-        $prefix = $isSelected ? '► ' : '  '
+        $prefix = $isSelected ? '⯈ ' : '  '
 
         $line = ("{0}{1}{2}" -f $prefix, $optionIcon, $optionText).PadRight($consoleWidth)
 
