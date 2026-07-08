@@ -37,7 +37,7 @@ $choice = Read-Menu `
     -Options $options `
     -ExitOption 'Exit'
 
-switch($choice) {
+switch ($choice) {
   'Pull'
   {
     ...
