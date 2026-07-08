@@ -1,7 +1,7 @@
-. (Join-Path $PSScriptRoot 'Helpers' 'Get-Options.ps1')
-. (Join-Path $PSScriptRoot 'Helpers' 'Write-Options.ps1')
-. (Join-Path $PSScriptRoot 'Helpers' 'Read-KeyInput.ps1')
 . (Join-Path $PSScriptRoot 'Helpers' 'Clear-Menu.ps1')
+. (Join-Path $PSScriptRoot 'Helpers' 'Get-Options.ps1')
+. (Join-Path $PSScriptRoot 'Helpers' 'Read-KeyInput.ps1')
+. (Join-Path $PSScriptRoot 'Helpers' 'Write-Options.ps1')
 
 function Write-MenuHeader()
 {
