@@ -29,7 +29,7 @@ Options can be one of two things. Anything able to be printed, or an object with
 ## Example
 
 ```powershell
-$options = 'Pull', 'Push', 'Fetch all', 'Commit'
+$options = ('Pull', 'Push', 'Fetch all', 'Commit')
 
 $choice = Read-Menu `
     -Header 'Select Git action' `
